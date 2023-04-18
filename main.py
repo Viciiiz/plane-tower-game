@@ -1,43 +1,16 @@
 import pygame
 import random
 from entities import Enemies
+from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
+    player_speed, font, score, obstacle_width, obstacle_height, obstacle_x, obstacle_y, game_over
 
 
-# initialize pygame
-pygame.init()
-
-# set up the game window
-WINDOW_WIDTH = 500
-WINDOW_HEIGHT = 500
-window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Avoid the Obstacles")
 
 # set up the game clock
 clock = pygame.time.Clock()
 
-# set up the colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 
-# set up the player and the player's movement speed
-PLAYER_WIDTH = 50
-PLAYER_HEIGHT = 50
-player_x = (WINDOW_WIDTH - PLAYER_WIDTH) // 2
-player_y = WINDOW_HEIGHT - PLAYER_HEIGHT - 10
-player_speed = 5
-
-# set up the font for displaying the score
-font = pygame.font.SysFont(None, 30)
-
-# set up the score
-score = 0
-
-
-# set up the obstacle and the obstacle's movement speed
-obstacle_width = 50
-obstacle_height = 50
-obstacle_x = random.randint(0, WINDOW_WIDTH - obstacle_width)
-obstacle_y = -obstacle_height
 if random.randint(0, 1):
     obstacle_speed_x = random.choice([-3, 3])
 else:
@@ -46,7 +19,7 @@ obstacle_speed_y = 3
 obstacle = Enemies.Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
 
 # game loop
-game_over = False
+# game_over = False
 while not game_over:
     # handle events
     for event in pygame.event.get():

@@ -33,3 +33,5 @@ obstacle_height = 50
 obstacle_x = random.randint(0, WINDOW_WIDTH - obstacle_width)
 obstacle_y = -obstacle_height
 obstacle_speed_y = 3
+
+game_over = False
