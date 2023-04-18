@@ -29,10 +29,14 @@ font = pygame.font.SysFont(None, 30)
 score = 0
 
 # obstacle and obstacle's movement speed
-obstacle_width = 50
-obstacle_height = 50
-obstacle_x = random.randint(0, WINDOW_WIDTH - obstacle_width)
-obstacle_y = -obstacle_height
+obstacle_plane_width = 50
+obstacle_plane_height = 50
+obstacle_boat_width = obstacle_plane_width + 10
+obstacle_boat_height = obstacle_plane_height + 10
+obstacle_plane_x = random.randint(0, WINDOW_WIDTH - obstacle_plane_width)
+obstacle_plane_y = -obstacle_plane_height
+obstacle_boat_x = random.randint(0, WINDOW_WIDTH - obstacle_boat_width)
+obstacle_boat_y = -obstacle_boat_height
 obstacle_speed_y = 3
 
 game_over = False
