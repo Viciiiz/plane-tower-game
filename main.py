@@ -19,7 +19,6 @@ obstacle_speed_y = 3
 obstacle = Enemies.Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
 
 # game loop
-# game_over = False
 while not game_over:
     # handle events
     for event in pygame.event.get():
@@ -32,15 +31,20 @@ while not game_over:
         player_x -= player_speed
     if keys[pygame.K_RIGHT] and player_x < WINDOW_WIDTH - PLAYER_WIDTH:
         player_x += player_speed
+    if keys[pygame.K_DOWN] and player_y < WINDOW_HEIGHT - PLAYER_WIDTH:
+        player_y += player_speed
+    if keys[pygame.K_UP] and player_y > 0:
+        player_y -= player_speed
 
     # handle obstacle movement
     obstacle.move()
-    if obstacle.y > WINDOW_HEIGHT:
+    if obstacle.y > WINDOW_HEIGHT or obstacle.x > WINDOW_WIDTH or obstacle.x < 0:
         obstacle.reset()
         score += 1
 
     # handle collision detection
-    if player_x + PLAYER_WIDTH > obstacle.x and player_x < obstacle.x + obstacle.width and player_y + PLAYER_HEIGHT > obstacle.y and player_y < obstacle.y + obstacle.height:
+    if player_x + PLAYER_WIDTH > obstacle.x and player_x < obstacle.x + obstacle.width \
+        and player_y + PLAYER_HEIGHT > obstacle.y and player_y < obstacle.y + obstacle.height:
         game_over = True
 
     # draw the game
