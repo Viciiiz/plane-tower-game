@@ -13,6 +13,7 @@ window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 # colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREY = (128, 128, 128)
 
 # player and player's movement speed
 PLAYER_WIDTH = 50
