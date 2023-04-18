@@ -1,63 +1,92 @@
 import pygame
-from entities import Tokens
+import random
+from Enemies import Enemies
+import sys
+ 
+# adding entities/ to the system path
+sys.path.insert(0, 'entities/')
 
-# pygame setup
+
+# initialize pygame
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+
+# set up the game window
+WINDOW_WIDTH = 500
+WINDOW_HEIGHT = 500
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Avoid the Obstacles")
+
+# set up the game clock
 clock = pygame.time.Clock()
-running = True
-dt = 0
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+# set up the colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+# set up the player and the player's movement speed
+PLAYER_WIDTH = 50
+PLAYER_HEIGHT = 50
+player_x = (WINDOW_WIDTH - PLAYER_WIDTH) // 2
+player_y = WINDOW_HEIGHT - PLAYER_HEIGHT - 10
+player_speed = 5
+
+# set up the font for displaying the score
+font = pygame.font.SysFont(None, 30)
+
+# set up the score
+score = 0
 
 
-class Coin(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
-        self.image = pygame.image.load("resources/images/token.png")
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-    def update(self):
-        # Add any behavior or interactions here
-        pass
 
 
-# use tokens
-all_sprites = pygame.sprite.Group()
-coin1 = Coin(100, 100)
-coin2 = Coin(200, 200)
-all_sprites.add(coin1, coin2)
+# set up the obstacle and the obstacle's movement speed
+obstacle_width = 50
+obstacle_height = 50
+obstacle_x = random.randint(0, WINDOW_WIDTH - obstacle_width)
+obstacle_y = -obstacle_height
+if random.randint(0, 1):
+    obstacle_speed_x = random.choice([-3, 3])
+else:
+    obstacle_speed_x = 0
+obstacle_speed_y = 3
+obstacle = Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
 
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
+# game loop
+game_over = False
+while not game_over:
+    # handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            game_over = True
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
-
-    pygame.draw.circle(screen, "red", player_pos, 40)
-
+    # handle player movement
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
-    if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
-    if keys[pygame.K_a]:
-        player_pos.x -= 300 * dt
-    if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+    if keys[pygame.K_LEFT] and player_x > 0:
+        player_x -= player_speed
+    if keys[pygame.K_RIGHT] and player_x < WINDOW_WIDTH - PLAYER_WIDTH:
+        player_x += player_speed
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
+    # handle obstacle movement
+    obstacle.move()
+    if obstacle.y > WINDOW_HEIGHT:
+        obstacle.reset()
+        score += 1
 
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(60) / 1000
+    # handle collision detection
+    if player_x + PLAYER_WIDTH > obstacle.x and player_x < obstacle.x + obstacle.width and player_y + PLAYER_HEIGHT > obstacle.y and player_y < obstacle.y + obstacle.height:
+        game_over = True
 
+    # draw the game
+    window.fill(WHITE)
+    pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
+    obstacle.draw()
+    score_text = font.render("Score: " + str(score), True, BLACK)
+    window.blit(score_text, (10, 10))
+    pygame.display.update()
+
+
+    # set the game's FPS
+    clock.tick(60)
+
+# quit pygame
 pygame.quit()
