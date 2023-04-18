@@ -1,10 +1,6 @@
 import random
 import pygame
-import sys
-import vars
- 
-# adding ../vars/vars.py to the system path
-sys.path.insert(0, '../vars/vars')
+from my_vars.my_vars import WINDOW_WIDTH, window, BLACK
 
 
 class Enemies:
@@ -21,7 +17,7 @@ class Enemies:
         self.y += self.speed_y
 
     def reset(self):
-        self.x = random.randint(0, vars.WINDOW_WIDTH - self.width)
+        self.x = random.randint(0, WINDOW_WIDTH - self.width)
         self.y = -self.height
         if random.randint(0, 1):
             self.speed_x = random.choice([-3, 3])
@@ -30,4 +26,9 @@ class Enemies:
         self.speed_y += 0.5
 
     def draw(self):
-        pygame.draw.rect(vars.window, vars.BLACK, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(window, BLACK, (self.x, self.y, self.width, self.height))
+        
+
+if __name__ == "__main__":
+    my_obj = Enemies(1,1,1,1,1,1)
+    my_obj.draw()

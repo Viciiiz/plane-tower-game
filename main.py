@@ -1,10 +1,6 @@
 import pygame
 import random
-from Enemies import Enemies
-import sys
- 
-# adding entities/ to the system path
-sys.path.insert(0, 'entities/')
+from entities import Enemies
 
 
 # initialize pygame
@@ -37,8 +33,6 @@ font = pygame.font.SysFont(None, 30)
 score = 0
 
 
-
-
 # set up the obstacle and the obstacle's movement speed
 obstacle_width = 50
 obstacle_height = 50
@@ -49,7 +43,7 @@ if random.randint(0, 1):
 else:
     obstacle_speed_x = 0
 obstacle_speed_y = 3
-obstacle = Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
+obstacle = Enemies.Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
 
 # game loop
 game_over = False
