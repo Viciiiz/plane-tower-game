@@ -16,7 +16,19 @@ if random.randint(0, 1):
 else:
     obstacle_speed_x = 0
 obstacle_speed_y = 3
-obstacle = Enemies.Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
+# obstacle = Enemies.Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
+
+
+
+# create a group to hold all enemy sprites
+enemy_group = pygame.sprite.Group()
+
+# create five enemy sprites and add them to the group
+for i in range(5):
+    enemy = Enemies.Enemies(obstacle_x, obstacle_y, obstacle_width, obstacle_height, obstacle_speed_x, obstacle_speed_y)
+    enemy_group.add(enemy)
+
+
 
 # game loop
 while not game_over:
@@ -37,20 +49,33 @@ while not game_over:
         player_y -= player_speed
 
     # handle obstacle movement
-    obstacle.move()
-    if obstacle.y > WINDOW_HEIGHT or obstacle.x > WINDOW_WIDTH or obstacle.x < 0:
-        obstacle.reset()
-        score += 1
+    # obstacle.move()
+    # if obstacle.y > WINDOW_HEIGHT or obstacle.x > WINDOW_WIDTH or obstacle.x < 0:
+    #     obstacle.reset()
+    #     score += 1
+    # enemy_group.move()
+    # move each enemy sprite in the group
+    for enemy in enemy_group:
+        enemy.move()
+
+    for enemy in enemy_group:
+        if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
+            enemy.reset()
+            score += 1
 
     # handle collision detection
-    if player_x + PLAYER_WIDTH > obstacle.x and player_x < obstacle.x + obstacle.width \
-        and player_y + PLAYER_HEIGHT > obstacle.y and player_y < obstacle.y + obstacle.height:
-        game_over = True
+    for enemy in enemy_group:
+        if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.width \
+            and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.height:
+            game_over = True
 
     # draw the game
     window.fill(WHITE)
     pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
-    obstacle.draw()
+    
+    for enemy in enemy_group:
+        enemy.draw()
+    
     score_text = font.render("Score: " + str(score), True, BLACK)
     window.blit(score_text, (10, 10))
     pygame.display.update()
