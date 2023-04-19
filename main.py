@@ -33,19 +33,25 @@ def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, 
     enemy_group.add(enemy)
 
 # create five enemy sprites and add them to the group
-for i in range(5):
-    type = ""
-    if random.randint(0, 1):
-        type = "plane"
-        create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
-    else:
-        type = "boat"
-        create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
+# for i in range(5):
+#     type = ""
+#     if random.randint(0, 1):
+#         type = "plane"
+#         create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
+#     else:
+#         type = "boat"
+#         create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
 
 
 Enemies.groups = [enemy_group]
-
+TIME_BEFORE_SPAWN = 1000
 ENEMY_DISTANCE_THRESHOLD = 100
+MAX_ENEMIES = 10
+ENEMY_INTERVAL = 8000
+enemy_timer = pygame.time.get_ticks()
+num_enemies = 0
+game_time = 0  # Total time elapsed since the start of the game
+FPS = 60
 
 # set a variable to store the time that the delay started
 delay_start_time = pygame.time.get_ticks()
@@ -57,6 +63,8 @@ while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
+            
+    game_time += clock.tick(FPS)
             
     # handle player movement
     keys = pygame.key.get_pressed()
@@ -75,12 +83,25 @@ while not game_over:
             
     # check how much time has passed since the delay started
     time_since_delay_start = pygame.time.get_ticks() - delay_start_time
+    
+    # Check if it's time to spawn a new enemy
+    if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies < MAX_ENEMIES:
+        # Create a new enemy and add it to the group
+        type = ""
+        if random.randint(0, 1):
+            type = "plane"
+            create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
+        else:
+            type = "boat"
+        create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
+        # enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0, 50, 50, random.randint(-5, 5), random.randint(1, 5))
+        # enemy_group.add(enemy)
+        num_enemies += 1
+        enemy_timer = pygame.time.get_ticks()
 
     # if the delay is over, start spawning enemies
-    if time_since_delay_start >= 3000:  # wait 3 seconds
-        # spawn enemies and update their positions
-        
-
+    if time_since_delay_start >= TIME_BEFORE_SPAWN:  # wait 3 seconds
+            
         # move enemies
         for enemy in enemy_group:
             enemy.move()
@@ -119,10 +140,18 @@ while not game_over:
     score_text = font.render("Score: " + str(score), True, BLACK)
     window.blit(score_text, (10, 10))
     pygame.display.update()
+    
+    # Increase the number of enemies over time
+    # if game_time >= 10000:  # Increase after 10 seconds
+    #     MAX_ENEMIES = 20
+    #     ENEMY_INTERVAL = 4000
+    # if game_time >= 20000:  # Increase after 20 seconds
+    #     MAX_ENEMIES = 30
+    #     ENEMY_INTERVAL = 3000
 
 
     # set the game's FPS
-    clock.tick(60)
+    clock.tick(FPS)
 
 # quit pygame
 pygame.quit()
@@ -131,3 +160,4 @@ pygame.quit()
 # Control number of enemies on the screen at the same time
 # separate ship and planes maybe?
 # make the enemy sprites spawn at the top in the beginning, because now they spawn anywhere
+# make the planes fly over the boats: different depths
