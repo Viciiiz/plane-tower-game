@@ -47,6 +47,9 @@ Enemies.groups = [enemy_group]
 
 ENEMY_DISTANCE_THRESHOLD = 100
 
+# set a variable to store the time that the delay started
+delay_start_time = pygame.time.get_ticks()
+
 
 # game loop
 while not game_over:
@@ -54,7 +57,7 @@ while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
-
+            
     # handle player movement
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_x > 0:
@@ -65,43 +68,52 @@ while not game_over:
         player_y += player_speed
     if keys[pygame.K_UP] and player_y > 0:
         player_y -= player_speed
-
-    # move enemies
-    for enemy in enemy_group:
-        enemy.move()
         
-        # make sure the enemies don't overlap
-        for other_enemy in enemy_group:
-            if enemy != other_enemy:
-                dx = enemy.rect.x - other_enemy.rect.x
-                dy = enemy.rect.y - other_enemy.rect.y
-                distance = math.sqrt(dx*dx + dy*dy)
-                if distance < ENEMY_DISTANCE_THRESHOLD:
-                    # if two enemies are too close, move one of them away
-                    angle = math.atan2(dy, dx)
-                    enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
-                    enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
-                    break
-                
-
-    # reset position of enemy objects and update score 
-    for enemy in enemy_group:
-        if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
-            enemy.reset()
-            score += 1
-
-    # handle collision detection between enemies and player
-    for enemy in enemy_group:
-        if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.width \
-            and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.height:
-            game_over = True
-
     # draw the game
     window.fill(WHITE)
     pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
-    
-    for enemy in enemy_group:
-        enemy.draw()
+            
+    # check how much time has passed since the delay started
+    time_since_delay_start = pygame.time.get_ticks() - delay_start_time
+
+    # if the delay is over, start spawning enemies
+    if time_since_delay_start >= 3000:  # wait 3 seconds
+        # spawn enemies and update their positions
+        
+
+        # move enemies
+        for enemy in enemy_group:
+            enemy.move()
+            
+            # make sure the enemies don't overlap
+            for other_enemy in enemy_group:
+                if enemy != other_enemy:
+                    dx = enemy.rect.x - other_enemy.rect.x
+                    dy = enemy.rect.y - other_enemy.rect.y
+                    distance = math.sqrt(dx*dx + dy*dy)
+                    if distance < ENEMY_DISTANCE_THRESHOLD:
+                        # if two enemies are too close, move one of them away
+                        angle = math.atan2(dy, dx)
+                        enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                        enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                        break
+                    
+
+        # reset position of enemy objects and update score 
+        for enemy in enemy_group:
+            if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
+                enemy.reset()
+                score += 1
+
+        # handle collision detection between enemies and player
+        for enemy in enemy_group:
+            if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
+                and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
+                game_over = True
+
+        
+        for enemy in enemy_group:
+            enemy.draw()
     
     score_text = font.render("Score: " + str(score), True, BLACK)
     window.blit(score_text, (10, 10))
@@ -113,3 +125,8 @@ while not game_over:
 
 # quit pygame
 pygame.quit()
+
+# to do
+# Control number of enemies on the screen at the same time
+# separate ship and planes maybe?
+# make the enemy sprites spawn at the top in the beginning, because now they spawn anywhere

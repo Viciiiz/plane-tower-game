@@ -13,11 +13,6 @@ class Enemies(pygame.sprite.Sprite):
         self.speed_x = speed_x
         self.speed_y = speed_y
         
-        ####
-        self.height = height
-        self.width = width
-        ####
-        
         # assign a type to the sprite
         self.type = type
 
@@ -52,9 +47,9 @@ class Enemies(pygame.sprite.Sprite):
         
     def draw(self):
         if self.type == "plane":
-            pygame.draw.rect(window, BLACK, (self.rect.x, self.rect.y, self.width, self.height))
+            pygame.draw.rect(window, BLACK, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
         else: 
-            pygame.draw.rect(window, GREY, (self.rect.x, self.rect.y, self.width, self.height))
+            pygame.draw.rect(window, GREY, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
             
 
     def getType(self):
