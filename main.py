@@ -25,7 +25,7 @@ enemy_group = pygame.sprite.Group()
 
 
 def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, type):
-    enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT/2),
+    enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0,
                     obstacle_width, obstacle_height, speed_range_x, speed_range_y, type)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
@@ -87,7 +87,8 @@ while not game_over:
             
             # make sure the enemies don't overlap
             for other_enemy in enemy_group:
-                if enemy != other_enemy:
+                if enemy != other_enemy and ((enemy.getType() == "boat" and other_enemy.getType() == "boat") or \
+                    (enemy.getType() == "plane" and other_enemy.getType() == "plane")):
                     dx = enemy.rect.x - other_enemy.rect.x
                     dy = enemy.rect.y - other_enemy.rect.y
                     distance = math.sqrt(dx*dx + dy*dy)
