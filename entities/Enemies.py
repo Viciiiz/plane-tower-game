@@ -1,10 +1,11 @@
 import random
 import pygame
 from my_vars.my_vars import WINDOW_WIDTH, window, BLACK, GREY
+from . import Bullet
 
 class Enemies(pygame.sprite.Sprite):
     
-    def __init__(self, x, y, width, height, speed_x, speed_y, type):
+    def __init__(self, x, y, width, height, speed_x, speed_y, type, bullet_group):
         # initialize the sprite
         pygame.sprite.Sprite.__init__(self)
 
@@ -23,6 +24,12 @@ class Enemies(pygame.sprite.Sprite):
         else:
             self.image.fill(GREY)
             
+        # create a timer for shooting
+        self.shoot_timer = 0
+        self.shoot_delay = 1000 # milliseconds
+        
+        self.bullet_group = bullet_group
+            
 
     def move(self):
         # update the position of the sprite based on its velocity
@@ -32,6 +39,17 @@ class Enemies(pygame.sprite.Sprite):
         else:
             self.rect.x += self.speed_x / 2
             self.rect.y += self.speed_y / 2
+            
+        # check if it's time to shoot
+        now = pygame.time.get_ticks()
+        if now - self.shoot_timer > self.shoot_delay:
+            self.shoot()
+            self.shoot_timer = now
+
+    def shoot(self):
+        # create a new bullet instance and add it to the bullet group
+        bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, 5, 5)
+        self.bullet_group.add(bullet)
             
 
     def reset(self):
@@ -55,3 +73,5 @@ class Enemies(pygame.sprite.Sprite):
     def getType(self):
         # return the type of the sprite
         return self.type
+    
+    

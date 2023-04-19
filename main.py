@@ -22,11 +22,13 @@ obstacle_speed_y = 3
 
 # create a group to hold all enemy sprites
 enemy_group = pygame.sprite.Group()
+bullet_group = pygame.sprite.Group()
+
 
 
 def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, type):
     enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, type)
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, type, bullet_group)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
         enemy.rect.y = random.randint(0, WINDOW_HEIGHT - enemy.rect.height)
@@ -47,7 +49,7 @@ Enemies.groups = [enemy_group]
 TIME_BEFORE_SPAWN = 1000
 ENEMY_DISTANCE_THRESHOLD = 100
 MAX_ENEMIES = 10
-ENEMY_INTERVAL = 8000
+ENEMY_INTERVAL = 3000
 enemy_timer = pygame.time.get_ticks()
 num_enemies = 0
 game_time = 0  # Total time elapsed since the start of the game
@@ -100,42 +102,46 @@ while not game_over:
         enemy_timer = pygame.time.get_ticks()
 
     # if the delay is over, start spawning enemies
-    if time_since_delay_start >= TIME_BEFORE_SPAWN:  # wait 3 seconds
+    # if time_since_delay_start >= TIME_BEFORE_SPAWN:  # wait 3 seconds
             
-        # move enemies
-        for enemy in enemy_group:
-            enemy.move()
-            
-            # make sure the enemies don't overlap
-            for other_enemy in enemy_group:
-                if enemy != other_enemy and ((enemy.getType() == "boat" and other_enemy.getType() == "boat") or \
-                    (enemy.getType() == "plane" and other_enemy.getType() == "plane")):
-                    dx = enemy.rect.x - other_enemy.rect.x
-                    dy = enemy.rect.y - other_enemy.rect.y
-                    distance = math.sqrt(dx*dx + dy*dy)
-                    if distance < ENEMY_DISTANCE_THRESHOLD:
-                        # if two enemies are too close, move one of them away
-                        angle = math.atan2(dy, dx)
-                        enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
-                        enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
-                        break
-                    
-
-        # reset position of enemy objects and update score 
-        for enemy in enemy_group:
-            if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
-                enemy.reset()
-                score += 1
-
-        # handle collision detection between enemies and player
-        for enemy in enemy_group:
-            if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
-                and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
-                game_over = True
-
+    # move enemies
+    for enemy in enemy_group:
+        enemy.move()
         
-        for enemy in enemy_group:
-            enemy.draw()
+        # make sure the enemies don't overlap
+        for other_enemy in enemy_group:
+            if enemy != other_enemy and ((enemy.getType() == "boat" and other_enemy.getType() == "boat") or \
+                (enemy.getType() == "plane" and other_enemy.getType() == "plane")):
+                dx = enemy.rect.x - other_enemy.rect.x
+                dy = enemy.rect.y - other_enemy.rect.y
+                distance = math.sqrt(dx*dx + dy*dy)
+                if distance < ENEMY_DISTANCE_THRESHOLD:
+                    # if two enemies are too close, move one of them away
+                    angle = math.atan2(dy, dx)
+                    enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                    enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                    break
+                
+
+    # reset position of enemy objects and update score 
+    for enemy in enemy_group:
+        if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
+            enemy.reset()
+            score += 1
+
+    # handle collision detection between enemies and player
+    for enemy in enemy_group:
+        if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
+            and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
+            game_over = True
+
+    
+    for enemy in enemy_group:
+        enemy.draw()
+            
+    for bullet in bullet_group:
+        bullet.move()
+        bullet.draw()
     
     score_text = font.render("Score: " + str(score), True, BLACK)
     window.blit(score_text, (10, 10))
@@ -157,7 +163,6 @@ while not game_over:
 pygame.quit()
 
 # to do
-# Control number of enemies on the screen at the same time
 # separate ship and planes maybe?
 # make the enemy sprites spawn at the top in the beginning, because now they spawn anywhere
 # make the planes fly over the boats: different depths
