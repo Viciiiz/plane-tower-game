@@ -1,3 +1,4 @@
+import math
 import pygame
 import random
 from entities import Enemies
@@ -22,17 +23,29 @@ obstacle_speed_y = 3
 # create a group to hold all enemy sprites
 enemy_group = pygame.sprite.Group()
 
+
+def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, type):
+    enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT/2),
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, type)
+    while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
+        enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
+        enemy.rect.y = random.randint(0, WINDOW_HEIGHT - enemy.rect.height)
+    enemy_group.add(enemy)
+
 # create five enemy sprites and add them to the group
 for i in range(5):
     type = ""
     if random.randint(0, 1):
         type = "plane"
-        enemy = Enemies.Enemies(obstacle_plane_x, obstacle_plane_y, obstacle_plane_width, obstacle_plane_height, obstacle_speed_x, obstacle_speed_y, type)
+        create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
     else:
         type = "boat"
-        enemy = Enemies.Enemies(obstacle_boat_x, obstacle_boat_y, obstacle_boat_width, obstacle_boat_height, obstacle_speed_x, obstacle_speed_y, type)
-    enemy_group.add(enemy)
+        create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
 
+
+Enemies.groups = [enemy_group]
+
+ENEMY_DISTANCE_THRESHOLD = 100
 
 
 # game loop
@@ -57,6 +70,21 @@ while not game_over:
     for enemy in enemy_group:
         enemy.move()
         
+        # make sure the enemies don't overlap
+        for other_enemy in enemy_group:
+            if enemy != other_enemy:
+                dx = enemy.rect.x - other_enemy.rect.x
+                dy = enemy.rect.y - other_enemy.rect.y
+                distance = math.sqrt(dx*dx + dy*dy)
+                if distance < ENEMY_DISTANCE_THRESHOLD:
+                    # if two enemies are too close, move one of them away
+                    angle = math.atan2(dy, dx)
+                    enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                    enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                    break
+                
+
+    # reset position of enemy objects and update score 
     for enemy in enemy_group:
         if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
             enemy.reset()
@@ -67,7 +95,6 @@ while not game_over:
         if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.width \
             and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.height:
             game_over = True
-        
 
     # draw the game
     window.fill(WHITE)

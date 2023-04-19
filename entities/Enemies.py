@@ -17,7 +17,7 @@ class Enemies(pygame.sprite.Sprite):
         self.height = height
         self.width = width
         ####
-
+        
         # assign a type to the sprite
         self.type = type
 
@@ -47,7 +47,7 @@ class Enemies(pygame.sprite.Sprite):
             self.speed_x = random.choice([-3, 3])
         else:
             self.speed_x = 0
-        self.speed_y += 0.5
+        self.speed_y += 0.3
         
         
     def draw(self):
