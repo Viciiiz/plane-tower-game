@@ -1,7 +1,7 @@
 import math
 import pygame
 import random
-from entities import Enemies
+from entities import Enemies, Player
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
     player_speed, font, score, obstacle_plane_width, obstacle_plane_height, obstacle_boat_width, obstacle_boat_height, \
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
@@ -13,19 +13,17 @@ pygame.display.set_caption("Avoid the Obstacles")
 clock = pygame.time.Clock()
 
 
-if random.randint(0, 1):
-    obstacle_speed_x = random.choice([-3, 3])
-else:
-    obstacle_speed_x = 0
-obstacle_speed_y = 3
-
-
 # create a group to hold all enemy sprites
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+player_group = pygame.sprite.Group()
 
 
+player = Player.Player(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT, player_speed)
+player_group.add(player)
 
+
+# function to create enemy sprites
 def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, type):
     enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0,
                     obstacle_width, obstacle_height, speed_range_x, speed_range_y, type, bullet_group)
@@ -34,22 +32,12 @@ def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, 
         enemy.rect.y = random.randint(0, WINDOW_HEIGHT - enemy.rect.height)
     enemy_group.add(enemy)
 
-# create five enemy sprites and add them to the group
-# for i in range(5):
-#     type = ""
-#     if random.randint(0, 1):
-#         type = "plane"
-#         create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
-#     else:
-#         type = "boat"
-#         create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
-
 
 Enemies.groups = [enemy_group]
 TIME_BEFORE_SPAWN = 1000
 ENEMY_DISTANCE_THRESHOLD = 100
-MAX_ENEMIES = 10
-ENEMY_INTERVAL = 3000
+MAX_ENEMIES = 50
+ENEMY_INTERVAL = 5000
 enemy_timer = pygame.time.get_ticks()
 num_enemies = 0
 game_time = 0  # Total time elapsed since the start of the game
@@ -58,6 +46,18 @@ FPS = 60
 # set a variable to store the time that the delay started
 delay_start_time = pygame.time.get_ticks()
 
+
+# function to display score
+def display_score():
+    score_text = font.render("Score: " + str(score), True, BLACK)
+    window.blit(score_text, (10, 10))
+    pygame.display.update()
+    
+# function to display health
+def display_health():
+    health_text = font.render("Health: " + str(player.health), True, BLACK)
+    window.blit(health_text, (400, 10))
+    pygame.display.update()
 
 # game loop
 while not game_over:
@@ -78,7 +78,10 @@ while not game_over:
         player_y += player_speed
     if keys[pygame.K_UP] and player_y > 0:
         player_y -= player_speed
-        
+    player.move(keys)
+    player.draw() 
+    
+       
     # draw the game
     window.fill(WHITE)
     pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
@@ -96,13 +99,8 @@ while not game_over:
         else:
             type = "boat"
         create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
-        # enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0, 50, 50, random.randint(-5, 5), random.randint(1, 5))
-        # enemy_group.add(enemy)
         num_enemies += 1
         enemy_timer = pygame.time.get_ticks()
-
-    # if the delay is over, start spawning enemies
-    # if time_since_delay_start >= TIME_BEFORE_SPAWN:  # wait 3 seconds
             
     # move enemies
     for enemy in enemy_group:
@@ -134,6 +132,19 @@ while not game_over:
         if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
             and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
             game_over = True
+            
+    # handle collision between player and bullet
+    # for bullet in bullet_group:
+    #     if pygame.sprite.spritecollide(player, bullet, True):
+    #         player.health -= 10
+    for bullet in bullet_group:
+        if player.rect.colliderect(bullet.rect):
+            # handle collision here, e.g. reduce player health
+            player.health -= 1
+            bullet_group.remove(bullet)
+            if player.health == 0:
+               game_over = True
+               pygame.quit() 
 
     
     for enemy in enemy_group:
@@ -143,9 +154,11 @@ while not game_over:
         bullet.move()
         bullet.draw()
     
-    score_text = font.render("Score: " + str(score), True, BLACK)
-    window.blit(score_text, (10, 10))
-    pygame.display.update()
+    # score_text = font.render("Score: " + str(score), True, BLACK)
+    # window.blit(score_text, (10, 10))
+    # pygame.display.update()
+    display_health()
+    display_score()
     
     # Increase the number of enemies over time
     # if game_time >= 10000:  # Increase after 10 seconds
