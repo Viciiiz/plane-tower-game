@@ -17,24 +17,29 @@ clock = pygame.time.Clock()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+enemy_plane_group = pygame.sprite.LayeredUpdates()
+enemy_boat_group = pygame.sprite.LayeredUpdates() 
+all_sprite_group = pygame.sprite.LayeredUpdates()
 
 
 player = Player.Player(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT, player_speed)
 player_group.add(player)
+all_sprite_group.add(player)
 
 
 # function to create enemy sprites
 def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y):
     if random.randint(0,1):
         enemy = EnemyPlane.EnemyPlane(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay)
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
     else:
         enemy = EnemyBoat.EnemyBoat(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay)
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
         enemy.rect.y = random.randint(0, abs(int(WINDOW_HEIGHT/10) - enemy.rect.height))
     enemy_group.add(enemy)
+    all_sprite_group.add(enemy)
 
 shoot_delay = 3000
 Enemies.groups = [enemy_group]
@@ -96,13 +101,7 @@ while not game_over:
     # Check if it's time to spawn a new enemy
     if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies < MAX_ENEMIES:
         # Create a new enemy and add it to the group
-        # type = ""
-        # if random.randint(0, 1):
-        #     type = "plane"
         create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4))
-        # else:
-        #     type = "boat"
-        # create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3))
         num_enemies += 1
         enemy_timer = pygame.time.get_ticks()
             
@@ -142,17 +141,43 @@ while not game_over:
         if player.rect.colliderect(bullet.rect):
             player.health -= 1
             bullet_group.remove(bullet)
+            all_sprite_group.remove(bullet)
             if player.health == 0:
                game_over = True
                pygame.quit() 
+          
+    # rearrange sprites to give depth     
+    # move bullets to the back of the sprite group
+    #move player to the front
+    for sprite in all_sprite_group:
+        if sprite.getType() == "player":
+            all_sprite_group.move_to_back(sprite)
+    for sprite in all_sprite_group:
+        if sprite.getType() == "bullet":
+            all_sprite_group.move_to_back(sprite)
+    # move planes to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "plane":
+            all_sprite_group.move_to_back(sprite)
+    # move boats to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "boat":
+            all_sprite_group.move_to_back(sprite)
+    #move player to the front
+    # for sprite in all_sprite_group:
+    #     if sprite.getType() == "player":
+    #         all_sprite_group.move_to_front(sprite)
 
     
-    for enemy in enemy_group:
-        enemy.draw()
+    # for enemy in enemy_group:
+    #     enemy.draw()
+    # enemy_group.draw(window)
             
     for bullet in bullet_group:
         bullet.move()
         bullet.draw()
+        
+    all_sprite_group.draw(window)
     
     
     display_health()

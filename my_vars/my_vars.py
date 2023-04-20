@@ -5,8 +5,8 @@ import random
 pygame.init()
 
 # game window
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 900
+WINDOW_HEIGHT = 700
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 

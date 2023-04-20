@@ -5,7 +5,7 @@ from . import Bullet
 
 class EnemyPlane(pygame.sprite.Sprite):
     
-    def __init__(self, x, y, width, height, speed_x, speed_y, bullet_group, shoot_delay):
+    def __init__(self, x, y, width, height, speed_x, speed_y, bullet_group, shoot_delay, all_sprite_group):
         # initialize the sprite
         pygame.sprite.Sprite.__init__(self)
 
@@ -16,6 +16,8 @@ class EnemyPlane(pygame.sprite.Sprite):
         
         # assign a type to the sprite
         self.type = "plane"
+        
+        self.all_sprite_group = all_sprite_group
 
         # set the image and color of the sprite based on its type
         self.image = pygame.Surface((width, height))
@@ -43,6 +45,7 @@ class EnemyPlane(pygame.sprite.Sprite):
         # create a new bullet instance and add it to the bullet group
         bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, 5, 5)
         self.bullet_group.add(bullet)
+        self.all_sprite_group.add(bullet)
             
 
     def reset(self):

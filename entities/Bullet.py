@@ -9,6 +9,8 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, radius*2, radius*2)
         self.speed_y = speed_y
         
+        self.type = "bullet"
+        
         self.radius = radius
 
         # create the image for the sprite
@@ -24,3 +26,7 @@ class Bullet(pygame.sprite.Sprite):
 
     def draw(self):
         pygame.draw.rect(window, RED, self.rect)
+        
+    def getType(self):
+        # return the type of the sprite
+        return self.type
