@@ -26,13 +26,13 @@ player_group.add(player)
 # function to create enemy sprites
 def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, type):
     enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, type, bullet_group)
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, type, bullet_group, shoot_delay)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
-        enemy.rect.y = random.randint(0, WINDOW_HEIGHT - enemy.rect.height)
+        enemy.rect.y = random.randint(0, abs(int(WINDOW_HEIGHT/10) - enemy.rect.height))
     enemy_group.add(enemy)
 
-
+shoot_delay = 3000
 Enemies.groups = [enemy_group]
 TIME_BEFORE_SPAWN = 1000
 ENEMY_DISTANCE_THRESHOLD = 100
@@ -98,7 +98,7 @@ while not game_over:
             create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
         else:
             type = "boat"
-        create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
+            create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
         num_enemies += 1
         enemy_timer = pygame.time.get_ticks()
             
@@ -167,6 +167,12 @@ while not game_over:
     # if game_time >= 20000:  # Increase after 20 seconds
     #     MAX_ENEMIES = 30
     #     ENEMY_INTERVAL = 3000
+    
+    # decrease shoot delay over time
+    # if game_time >= 5000:  # Increase after 10 seconds
+    #     for enemy in enemy_group:
+    #         enemy.setShootDelay(shoot_delay - 500)
+    #         shoot_delay -= 500
 
 
     # set the game's FPS

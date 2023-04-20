@@ -5,7 +5,7 @@ from . import Bullet
 
 class Enemies(pygame.sprite.Sprite):
     
-    def __init__(self, x, y, width, height, speed_x, speed_y, type, bullet_group):
+    def __init__(self, x, y, width, height, speed_x, speed_y, type, bullet_group, shoot_delay):
         # initialize the sprite
         pygame.sprite.Sprite.__init__(self)
 
@@ -26,7 +26,7 @@ class Enemies(pygame.sprite.Sprite):
             
         # create a timer for shooting
         self.shoot_timer = 0
-        self.shoot_delay = 1000 # milliseconds
+        self.shoot_delay = shoot_delay # milliseconds
         
         self.bullet_group = bullet_group
             
@@ -74,4 +74,6 @@ class Enemies(pygame.sprite.Sprite):
         # return the type of the sprite
         return self.type
     
+    def setShootDelay(self, shoot_delay):
+        self.shoot_delay = shoot_delay
     
