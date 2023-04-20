@@ -1,7 +1,7 @@
 import math
 import pygame
 import random
-from entities import Enemies, Player
+from entities import Enemies, Player, EnemyBoat, EnemyPlane
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
     player_speed, font, score, obstacle_plane_width, obstacle_plane_height, obstacle_boat_width, obstacle_boat_height, \
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
@@ -24,9 +24,13 @@ player_group.add(player)
 
 
 # function to create enemy sprites
-def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y, type):
-    enemy = Enemies.Enemies(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, type, bullet_group, shoot_delay)
+def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y):
+    if random.randint(0,1):
+        enemy = EnemyPlane.EnemyPlane(random.randint(0, WINDOW_WIDTH), 0,
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay)
+    else:
+        enemy = EnemyBoat.EnemyBoat(random.randint(0, WINDOW_WIDTH), 0,
+                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
         enemy.rect.y = random.randint(0, abs(int(WINDOW_HEIGHT/10) - enemy.rect.height))
@@ -92,13 +96,13 @@ while not game_over:
     # Check if it's time to spawn a new enemy
     if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies < MAX_ENEMIES:
         # Create a new enemy and add it to the group
-        type = ""
-        if random.randint(0, 1):
-            type = "plane"
-            create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4), "plane")
-        else:
-            type = "boat"
-            create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3), "boat")
+        # type = ""
+        # if random.randint(0, 1):
+        #     type = "plane"
+        create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4))
+        # else:
+        #     type = "boat"
+        # create_enemy(obstacle_boat_width, obstacle_boat_height, random.randint(1, 3), random.randint(1, 3))
         num_enemies += 1
         enemy_timer = pygame.time.get_ticks()
             
@@ -106,7 +110,7 @@ while not game_over:
     for enemy in enemy_group:
         enemy.move()
         
-        # make sure the enemies don't overlap
+        # make sure the enemies don't overlap if they are the same type
         for other_enemy in enemy_group:
             if enemy != other_enemy and ((enemy.getType() == "boat" and other_enemy.getType() == "boat") or \
                 (enemy.getType() == "plane" and other_enemy.getType() == "plane")):
@@ -129,17 +133,13 @@ while not game_over:
 
     # handle collision detection between enemies and player
     for enemy in enemy_group:
-        if player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
+        if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
             and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
             game_over = True
             
     # handle collision between player and bullet
-    # for bullet in bullet_group:
-    #     if pygame.sprite.spritecollide(player, bullet, True):
-    #         player.health -= 10
     for bullet in bullet_group:
         if player.rect.colliderect(bullet.rect):
-            # handle collision here, e.g. reduce player health
             player.health -= 1
             bullet_group.remove(bullet)
             if player.health == 0:
@@ -154,9 +154,7 @@ while not game_over:
         bullet.move()
         bullet.draw()
     
-    # score_text = font.render("Score: " + str(score), True, BLACK)
-    # window.blit(score_text, (10, 10))
-    # pygame.display.update()
+    
     display_health()
     display_score()
     
@@ -183,5 +181,4 @@ pygame.quit()
 
 # to do
 # separate ship and planes maybe?
-# make the enemy sprites spawn at the top in the beginning, because now they spawn anywhere
-# make the planes fly over the boats: different depths
+# make the player's plane fly over the boats: different depths
