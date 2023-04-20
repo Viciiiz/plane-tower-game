@@ -34,7 +34,7 @@ def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y):
                     obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
     else:
         enemy = EnemyBoat.EnemyBoat(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
+                    obstacle_width + 15, obstacle_height + 15, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
         enemy.rect.y = random.randint(0, abs(int(WINDOW_HEIGHT/10) - enemy.rect.height))
@@ -67,6 +67,25 @@ def display_health():
     health_text = font.render("Health: " + str(player.health), True, BLACK)
     window.blit(health_text, (400, 10))
     pygame.display.update()
+ 
+# rearrange sprites to give depth     
+def order_depth():  
+    # move player to the back of the sprite
+    for sprite in all_sprite_group:
+        if sprite.getType() == "player":
+            all_sprite_group.move_to_back(sprite)
+    # move bullets to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "bullet":
+            all_sprite_group.move_to_back(sprite)
+    # move planes to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "plane":
+            all_sprite_group.move_to_back(sprite)
+    # move boats to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "boat":
+            all_sprite_group.move_to_back(sprite)
 
 # game loop
 while not game_over:
@@ -145,37 +164,14 @@ while not game_over:
             if player.health == 0:
                game_over = True
                pygame.quit() 
-          
-    # rearrange sprites to give depth     
-    # move bullets to the back of the sprite group
-    #move player to the front
-    for sprite in all_sprite_group:
-        if sprite.getType() == "player":
-            all_sprite_group.move_to_back(sprite)
-    for sprite in all_sprite_group:
-        if sprite.getType() == "bullet":
-            all_sprite_group.move_to_back(sprite)
-    # move planes to the back of the sprite group
-    for sprite in all_sprite_group:
-        if sprite.getType() == "plane":
-            all_sprite_group.move_to_back(sprite)
-    # move boats to the back of the sprite group
-    for sprite in all_sprite_group:
-        if sprite.getType() == "boat":
-            all_sprite_group.move_to_back(sprite)
-    #move player to the front
-    # for sprite in all_sprite_group:
-    #     if sprite.getType() == "player":
-    #         all_sprite_group.move_to_front(sprite)
-
-    
-    # for enemy in enemy_group:
-    #     enemy.draw()
-    # enemy_group.draw(window)
+ 
             
     for bullet in bullet_group:
         bullet.move()
-        bullet.draw()
+        # bullet.draw()
+        
+    # rearrange sprites to give depth 
+    order_depth()
         
     all_sprite_group.draw(window)
     
@@ -205,5 +201,9 @@ while not game_over:
 pygame.quit()
 
 # to do
-# separate ship and planes maybe?
-# make the player's plane fly over the boats: different depths
+# fix bullet speed
+# fix bullet trajectory
+# better control of number of enemies on the screen over time
+# add turrels and landscape?
+# add tokens?
+# add towers at the end
