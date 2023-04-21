@@ -5,6 +5,11 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
+                // Install Pygame
+                sh "pip install pygame"
+                
+                // Run Python script with video display
+                sh 'xvfb-run python3 main.py'
             }
         }
         stage('Test') {
