@@ -43,7 +43,7 @@ class EnemyPlane(pygame.sprite.Sprite):
 
     def shoot(self):
         # create a new bullet instance and add it to the bullet group
-        bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, 5, 5)
+        bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, self.speed_y + 2, 5)
         self.bullet_group.add(bullet)
         self.all_sprite_group.add(bullet)
             

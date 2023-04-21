@@ -2,6 +2,7 @@ import math
 import pygame
 import random
 from entities import Enemies, Player, EnemyBoat, EnemyPlane
+from game.level import levels
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
     player_speed, font, score, obstacle_plane_width, obstacle_plane_height, obstacle_boat_width, obstacle_boat_height, \
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
@@ -201,9 +202,14 @@ while not game_over:
 pygame.quit()
 
 # to do
-# fix bullet speed
-# fix bullet trajectory
 # better control of number of enemies on the screen over time
+    # this level will be 45 seconds long and will have a max of 10 enemies on the screen. 
+        # first 15 seconds: 3 enemies max on the screen
+        # 5 seconds of break
+        # next 15 seconds: 6 enemies on the screen
+        # 5 seconds of break
+        # last 15 seconds: 10 enemies on the screen
+        # then tower?
 # add turrels and landscape?
 # add tokens?
 # add towers at the end

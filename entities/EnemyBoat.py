@@ -11,8 +11,8 @@ class EnemyBoat(pygame.sprite.Sprite):
 
         # set the position, size, and velocity of the sprite
         self.rect = pygame.Rect(x, y, width, height)
-        self.speed_x = speed_x
-        self.speed_y = speed_y
+        self.speed_x = speed_x 
+        self.speed_y = speed_y 
         
         self.all_sprite_group = all_sprite_group
         
@@ -44,7 +44,7 @@ class EnemyBoat(pygame.sprite.Sprite):
 
     def shoot(self):
         # create a new bullet instance and add it to the bullet group
-        bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, 5, 5)
+        bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, self.speed_y + 3, 5)
         self.bullet_group.add(bullet)
         self.all_sprite_group.add(bullet)
             

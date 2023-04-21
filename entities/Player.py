@@ -49,3 +49,6 @@ class Player(pygame.sprite.Sprite):
     def getType(self):
         # return the type of the sprite
         return self.type
+    
+    def getPosition(self):
+        return self.rect.top - int(self.rect.height/2), self.rect.right - int(self.rect.width/2) 
