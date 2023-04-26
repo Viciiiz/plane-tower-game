@@ -1,5 +1,5 @@
 import pygame
-from my_vars.my_vars import WINDOW_WIDTH, window, BLACK, GREY, WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, \
+from my_vars.my_vars import WINDOW_WIDTH, window, BLUE, RED, WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, \
     player_speed, font, score, obstacle_plane_width, obstacle_plane_height, obstacle_boat_width, obstacle_boat_height, \
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
 
@@ -17,9 +17,10 @@ class Player(pygame.sprite.Sprite):
 
         # set the image and color of the sprite
         self.image = pygame.Surface((width, height))
-        self.image.fill(BLACK)
+        self.image.fill(BLUE)
         
         self.health = 5
+        self.is_invincible = False
 
     def move(self, keys):
         # update the position of the sprite based on user input
@@ -46,9 +47,23 @@ class Player(pygame.sprite.Sprite):
         # draw the player on the given surface
         pygame.draw.rect(window, BLACK, self.rect)
         
+    def activate_invincibility_effect(self):
+        self.is_invincible = True
+        pygame.time.set_timer(pygame.USEREVENT, 4000)
+        self.image.fill(RED)
+        
+        
+    def deactivate_invincibility_effect(self):
+        self.is_invincible = False
+        pygame.time.set_timer(pygame.USEREVENT, 0)
+        self.image.fill(BLUE)
+        
     def getType(self):
         # return the type of the sprite
         return self.type
     
     def getPosition(self):
         return self.rect.top - int(self.rect.height/2), self.rect.right - int(self.rect.width/2) 
+    
+    def getInvincibilityStatus(self):
+        return self.is_invincible

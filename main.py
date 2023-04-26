@@ -2,6 +2,7 @@ import math
 import pygame
 import random
 from entities import Enemies, Player, EnemyBoat, EnemyPlane, Tokens
+from effects import Invincibility
 import json
 # from game.level import levels
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
@@ -28,6 +29,7 @@ bullet_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 all_sprite_group = pygame.sprite.LayeredUpdates()
 token_group = pygame.sprite.Group()
+player_invincibility_effect_group = pygame.sprite.Group()
 
 
 player = Player.Player(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT, player_speed)
@@ -85,6 +87,7 @@ max_round = 0
 num_reset = 0
 
 player_invincibility = 0
+using_invincibility = False
 
 
 # set a variable to store the time that the delay started
@@ -141,8 +144,21 @@ while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
+        if event.type == pygame.KEYDOWN:
+            # invincibility
+            if event.key == pygame.K_SPACE:
+                if player_invincibility > 0:
+                    player.activate_invincibility_effect()
+                    player_invincibility -= 1
+                    player_invincibility_effect_group.add(Invincibility.Invincibility(player.rect))
+        if event.type == pygame.USEREVENT:
+            # timer has expired
+            player.deactivate_invincibility_effect()
+            player_invincibility_effect_group.empty()
             
     game_time += clock.tick(FPS)
+    
+    
             
     # handle player movement
     keys = pygame.key.get_pressed()
@@ -155,7 +171,10 @@ while not game_over:
     if keys[pygame.K_UP] and player_y > 0:
         player_y -= player_speed
     player.move(keys)
+    player_invincibility_effect_group.update()
     player.draw() 
+    player_invincibility_effect_group.draw(window)
+    
     
        
     # draw the game
@@ -175,11 +194,7 @@ while not game_over:
         # update and draw the coin
         token.move()
         token.draw(window)
-        # print(token.getType())
-                    
-        # respawn the coin if necessary
-        # if token.shouldRespawn():
-        #     token.reset()
+ 
             
         # check for collisions with the player
         if token.checkCollision(player):
@@ -264,20 +279,21 @@ while not game_over:
                 num_reset = 0
             score += 1
 
-    # handle collision detection between enemies and player
-    for enemy in enemy_group:
-        if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
-            and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
-            game_over = True
-            
-    # handle collision between player and bullet
-    for bullet in bullet_group:
-        if player.rect.colliderect(bullet.rect):
-            player.health -= 1
-            bullet_group.remove(bullet)
-            all_sprite_group.remove(bullet)
-            if player.health == 0:
-               game_over = True
+    if not player.getInvincibilityStatus():
+        # handle collision detection between enemies and player
+        for enemy in enemy_group:
+            if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
+                and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
+                game_over = True
+                
+        # handle collision between player and bullet
+        for bullet in bullet_group:
+            if player.rect.colliderect(bullet.rect):
+                player.health -= 1
+                bullet_group.remove(bullet)
+                all_sprite_group.remove(bullet)
+                if player.health == 0:
+                    game_over = True
  
             
     for bullet in bullet_group:
