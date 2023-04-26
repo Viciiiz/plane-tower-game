@@ -66,8 +66,8 @@ enemy_timer = pygame.time.get_ticks()
 num_enemies = 0
 game_time = 0  # Total time elapsed since the start of the game
 FPS = 60
-obstacle_height = 50
-obstacle_width = 50
+obstacle_height = 100
+obstacle_width = 100
 
 current_level = "level_1"
 current_difficulty = "easy"
@@ -300,8 +300,8 @@ while not game_over:
     if not player.getInvincibilityStatus():
         # handle collision detection between enemies and player
         for enemy in enemy_group:
-            if enemy.getType() == "plane" and player.getX() + PLAYER_WIDTH - 25 > enemy.rect.x and player.getX() < enemy.rect.x + enemy.rect.width -25 \
-                and player.getY() + PLAYER_HEIGHT -25 > enemy.rect.y and player.getY() < enemy.rect.y + enemy.rect.height - 25:
+            if enemy.getType() == "plane" and player.getX() + PLAYER_WIDTH - 35 > enemy.rect.x and player.getX() < enemy.rect.x + enemy.rect.width -35 \
+                and player.getY() + PLAYER_HEIGHT -35 > enemy.rect.y and player.getY() < enemy.rect.y + enemy.rect.height - 35:
                 game_over = True
                 
         # handle collision between player and bullet
@@ -349,3 +349,6 @@ pygame.quit()
 # to do
 # add turrels and landscape?
 # add towers at the end
+
+# add enemy graphics
+    # boat and plane

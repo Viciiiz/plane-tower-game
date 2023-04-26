@@ -21,8 +21,17 @@ class EnemyPlane(pygame.sprite.Sprite):
         self.all_sprite_group = all_sprite_group
 
         # set the image and color of the sprite based on its type
-        self.image = pygame.Surface((width, height))
-        self.image.fill(BLACK)
+        # self.image = pygame.Surface((width, height))
+        # self.image.fill(BLACK)
+        self.image = pygame.image.load("resources/images/enemy-plane.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.image.set_colorkey((0, 0, 0))
+        self.transparent_surface = pygame.Surface(self.image.get_size(), flags=pygame.SRCALPHA)
+        self.transparent_surface.fill((0, 0, 0, 0))
+        self.transparent_surface.blit(self.image, (0, 0))
+        self.image = self.transparent_surface
+        
+        # self.velocity = [speed_x, speed_y]
         
         # create a timer for shooting
         self.shoot_timer = 0
@@ -35,6 +44,18 @@ class EnemyPlane(pygame.sprite.Sprite):
         # update the position of the sprite based on its velocity
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
+        
+        # # Update the sprite's position based on its velocity
+        # self.rect.move_ip(*self.velocity)
+
+        # # Calculate the angle of rotation based on the sprite's velocity
+        # angle = math.atan2(self.velocity[1], self.velocity[0])
+        # angle_degrees = math.degrees(angle)
+
+        # # Rotate the sprite's image
+        # self.image = pygame.transform.rotate(self.transparent_surface, -angle_degrees-90)
+        self.image = pygame.transform.rotate(self.transparent_surface, -180)
+        # self.rect = self.image.get_rect(center=self.rect.center)
             
         # check if it's time to shoot
         now = pygame.time.get_ticks()
@@ -80,8 +101,10 @@ class EnemyPlane(pygame.sprite.Sprite):
         
         
     def draw(self):
-        pygame.draw.rect(window, BLACK, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
-            
+        # pygame.draw.rect(window, BLACK, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        sprite = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+        sprite.blit(self.image, (0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        window.blit(self.image, self.rect)
 
     def getType(self):
         # return the type of the sprite
