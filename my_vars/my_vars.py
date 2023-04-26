@@ -17,6 +17,9 @@ GREY = (128, 128, 128)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+CLEAR_BLUE = (52, 198, 235)
+ASPHALT = (99, 96, 110)
+BEACH = (166, 144, 116)
 
 # player and player's movement speed
 PLAYER_WIDTH = 100

@@ -5,7 +5,7 @@ from entities import Enemies, Player, EnemyBoat, EnemyPlane, Tokens
 from effects import Invincibility
 import json
 # from game.level import levels
-from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
+from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, ASPHALT, BEACH, CLEAR_BLUE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
     player_speed, font, score, obstacle_plane_width, obstacle_plane_height, obstacle_boat_width, obstacle_boat_height, \
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
 
@@ -57,7 +57,7 @@ def create_enemy(obstacle_width, obstacle_height, speed_range_x_boat, speed_rang
 
 Enemies.groups = [enemy_group]
 TIME_BEFORE_SPAWN = 1000
-ENEMY_DISTANCE_THRESHOLD = 100
+ENEMY_DISTANCE_THRESHOLD = 200
 MAX_ENEMIES = 50
 ENEMY_INTERVAL = 4000
 TOKEN_DELAY = 4000
@@ -89,6 +89,7 @@ num_reset = 0
 player_invincibility = 0
 using_invincibility = False
 
+is_on_ocean = True
 
 # set a variable to store the time that the delay started
 delay_start_time = pygame.time.get_ticks()
@@ -135,6 +136,24 @@ def order_depth():
         if sprite.getType() == "boat":
             all_sprite_group.move_to_back(sprite)
 
+# Define the top and bottom colors of the gradient
+top_color = BEACH
+bottom_color = CLEAR_BLUE
+top_color_2 = ASPHALT
+bottom_color_2 = BEACH
+
+# Create a surface for the gradient
+gradient_surface = pygame.Surface((window.get_width(), window.get_height()))
+
+# Draw the gradient on the surface
+for y in range(window.get_height()):
+    # Calculate the color at this point in the gradient
+    t = y / (window.get_height() - 1)
+    color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
+
+    # Draw a line of this color on the surface
+    pygame.draw.line(gradient_surface, color, (0, y), (window.get_width(), y))
+
 
 ######################################################################################
 
@@ -159,6 +178,33 @@ while not game_over:
             
     game_time += clock.tick(FPS)
     
+    if score > 5:
+        # Draw the gradient on the screen
+        is_on_ocean = False
+        
+    if score > 10 and not is_on_ocean:
+        # window.fill(ASPHALT)
+        for y in range(window.get_height()):
+            # Calculate the color at this point in the gradient
+            t = y / (window.get_height() - 1)
+            color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
+
+            # Draw a line of this color on the screen
+            pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+        window.fill(BEACH)
+    
+    if score > 15 and not is_on_ocean:
+        for y in range(window.get_height()):
+            # Calculate the color at this point in the gradient
+            t = y / (window.get_height() - 1)
+            color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color_2, bottom_color_2))
+
+            # Draw a line of this color on the screen
+            pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+        window.fill(ASPHALT)
+
+    else: 
+        window.fill(CLEAR_BLUE)
     
             
     # handle player movement
@@ -179,7 +225,7 @@ while not game_over:
     
        
     # draw the game
-    window.fill(WHITE)
+    # window.fill(CLEAR_BLUE)
     # pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
     
             
@@ -230,7 +276,7 @@ while not game_over:
         # Create a new enemy and add it to the group
         for enemy_num in range(enemy_count[current_enemy_index]):
             type = "plane"
-            if random.randint(0,1):
+            if random.randint(0,1) and is_on_ocean:
                 type = "boat"
             create_enemy(obstacle_width, obstacle_height, \
                 random.randint(boat_speed_min, boat_speed_max), random.randint(boat_speed_min, boat_speed_max), \
@@ -251,8 +297,17 @@ while not game_over:
         
         # make sure the enemies don't overlap if they are the same type
         for other_enemy in enemy_group:
-            if enemy != other_enemy and ((enemy.getType() == "boat" and other_enemy.getType() == "boat") or \
-                (enemy.getType() == "plane" and other_enemy.getType() == "plane")):
+            if enemy != other_enemy and (enemy.getType() == "boat" and other_enemy.getType() == "boat"):
+                dx = enemy.rect.x - other_enemy.rect.x
+                dy = enemy.rect.y - other_enemy.rect.y
+                distance = math.sqrt(dx*dx + dy*dy)
+                if distance < ENEMY_DISTANCE_THRESHOLD:
+                    # if two enemies are too close, move one of them away
+                    angle = math.atan2(dy, dx)
+                    enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                    enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
+                    break
+            elif enemy != other_enemy and (enemy.getType() == "boat" and other_enemy.getType() == "boat"): 
                 dx = enemy.rect.x - other_enemy.rect.x
                 dy = enemy.rect.y - other_enemy.rect.y
                 distance = math.sqrt(dx*dx + dy*dy)
