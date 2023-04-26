@@ -84,6 +84,8 @@ max_round = 0
 
 num_reset = 0
 
+player_invincibility = 0
+
 
 # set a variable to store the time that the delay started
 delay_start_time = pygame.time.get_ticks()
@@ -92,13 +94,19 @@ delay_start_time = pygame.time.get_ticks()
 # function to display score
 def display_score():
     score_text = font.render("Score: " + str(score), True, BLACK)
-    window.blit(score_text, (10, 10))
+    window.blit(score_text, (15, 10))
     pygame.display.update()
     
 # function to display health
 def display_health():
     health_text = font.render("Health: " + str(player.health), True, BLACK)
-    window.blit(health_text, (WINDOW_WIDTH - 100, 10))
+    window.blit(health_text, (15, 40))
+    pygame.display.update()
+    
+# function to display health
+def display_invincibility():
+    health_text = font.render("Invincibility: " + str(player_invincibility), True, BLACK)
+    window.blit(health_text, (WINDOW_WIDTH - 160, 10))
     pygame.display.update()
  
 # rearrange sprites to give depth     
@@ -156,7 +164,7 @@ while not game_over:
             
     # check how much time has passed since the delay started
     time_since_delay_start = pygame.time.get_ticks() - delay_start_time
-    print(" ", current_token_delay, " ", time_since_delay_start, " ", delay_start_time)
+    # print(" ", current_token_delay, " ", time_since_delay_start, " ", delay_start_time)
     # create a new token instance 
     if time_since_delay_start >= (delay_start_time + current_token_delay) and len(token_group) == 0:
         token = Tokens.Token(all_sprite_group)
@@ -176,7 +184,14 @@ while not game_over:
         # check for collisions with the player
         if token.checkCollision(player):
             # time_since_delay_start = 0
-            score += 100
+            print(token.getCategory())
+            if token.getCategory() == "score":
+                score += 100
+            elif token.getCategory() == "life":
+                player.health += 1
+            else:
+                player_invincibility += 1
+                
             token_group.remove(token)
             all_sprite_group.remove(token)
             token.kill()
@@ -277,6 +292,7 @@ while not game_over:
     
     display_health()
     display_score()
+    display_invincibility()
     
     
     
@@ -291,5 +307,4 @@ pygame.quit()
 
 # to do
 # add turrels and landscape?
-# add tokens?
 # add towers at the end

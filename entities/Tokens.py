@@ -16,9 +16,9 @@ class Token(pygame.sprite.Sprite):
         
         # assign a type to the sprite
         rand_category = random.randint(1,10)
-        if rand_category == 8:
+        if rand_category > 8:
             self.category = "life"
-        elif rand_category == 2:
+        elif rand_category < 2:
             self.category = "boost"
         else:
             self.category = "score"
