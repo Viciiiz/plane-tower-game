@@ -35,11 +35,6 @@ player_group.add(player)
 all_sprite_group.add(player)
 
 
-# create a new token instance 
-token = Tokens.Token(all_sprite_group)
-token_group.add(token)
-all_sprite_group.add(token)
-
 
 # function to create enemy sprites
 def create_enemy(obstacle_width, obstacle_height, speed_range_x_boat, speed_range_y_boat, speed_range_x_plane, speed_range_y_plane, type):
@@ -63,6 +58,8 @@ TIME_BEFORE_SPAWN = 1000
 ENEMY_DISTANCE_THRESHOLD = 100
 MAX_ENEMIES = 50
 ENEMY_INTERVAL = 4000
+TOKEN_DELAY = 4000
+current_token_delay = TOKEN_DELAY
 enemy_timer = pygame.time.get_ticks()
 num_enemies = 0
 game_time = 0  # Total time elapsed since the start of the game
@@ -89,7 +86,7 @@ num_reset = 0
 
 
 # set a variable to store the time that the delay started
-# delay_start_time = pygame.time.get_ticks()
+delay_start_time = pygame.time.get_ticks()
 
 
 # function to display score
@@ -106,6 +103,10 @@ def display_health():
  
 # rearrange sprites to give depth     
 def order_depth():  
+    # move tokens to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "token":
+            all_sprite_group.move_to_back(sprite)
     # move player to the back of the sprite
     for sprite in all_sprite_group:
         if sprite.getType() == "player":
@@ -154,7 +155,41 @@ while not game_over:
     pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
             
     # check how much time has passed since the delay started
-    # time_since_delay_start = pygame.time.get_ticks() - delay_start_time
+    time_since_delay_start = pygame.time.get_ticks() - delay_start_time
+    print(" ", current_token_delay, " ", time_since_delay_start, " ", delay_start_time)
+    # create a new token instance 
+    if time_since_delay_start >= (delay_start_time + current_token_delay) and len(token_group) == 0:
+        token = Tokens.Token(all_sprite_group)
+        token_group.add(token)
+        # all_sprite_group.add(token)
+        
+    if len(token_group) > 0:
+        # update and draw the coin
+        token.move()
+        token.draw(window)
+        # print(token.getType())
+                    
+        # respawn the coin if necessary
+        # if token.shouldRespawn():
+        #     token.reset()
+            
+        # check for collisions with the player
+        if token.checkCollision(player):
+            # time_since_delay_start = 0
+            score += 100
+            token_group.remove(token)
+            all_sprite_group.remove(token)
+            token.kill()
+            delay_start_time = time_since_delay_start
+            rand_token_generation = random.randint(1,4) * 1000
+            if random.randint(0,1):
+                # print("subtracting delay", current_token_delay, " ", time_since_delay_start)
+                current_token_delay = TOKEN_DELAY - rand_token_generation
+            else:
+                # print("adding delay", current_token_delay, " ", time_since_delay_start)
+                current_token_delay = TOKEN_DELAY + rand_token_generation
+                
+        
     
     # Check if it's time to spawn a new enemy
     # if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies == 0 and current_round == max_round: # and num_enemies < MAX_ENEMIES:
@@ -197,19 +232,6 @@ while not game_over:
                     break
     
     
-    
-    
-    # update and draw the coin
-    token.move()
-    token.draw(window)
-                
-    # respawn the coin if necessary
-    if token.shouldRespawn():
-        token.reset()
-        
-    # check for collisions with the player
-    if token.checkCollision(player):
-        score += 100
 
     # reset position of enemy objects and update score 
     for enemy in enemy_group:

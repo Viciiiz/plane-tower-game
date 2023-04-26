@@ -15,13 +15,15 @@ class Token(pygame.sprite.Sprite):
         self.speed_y = 2
         
         # assign a type to the sprite
-        rand_type = random.randint(1,10)
-        if rand_type > 8:
-            self.type = "life"
-        elif rand_type < 2:
-            self.type = "boost"
+        rand_category = random.randint(1,10)
+        if rand_category == 8:
+            self.category = "life"
+        elif rand_category == 2:
+            self.category = "boost"
         else:
-            self.type = "score"
+            self.category = "score"
+            
+        self.type = "token"
 
         # set the image and color of the sprite based on its type
         self.image = pygame.Surface((10, 10))
@@ -38,6 +40,7 @@ class Token(pygame.sprite.Sprite):
         # check if the coin has gone off the screen
         if self.rect.y > WINDOW_HEIGHT:
             self.reset()
+            # self.kill()
         
     def draw(self, window):
         pygame.draw.rect(window, GREEN, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
@@ -56,7 +59,7 @@ class Token(pygame.sprite.Sprite):
     def checkCollision(self, player):
         # check if the coin has collided with the player
         if self.rect.colliderect(player.rect):
-            self.reset()
+            #self.reset()
             return True
         return False
         
@@ -70,4 +73,8 @@ class Token(pygame.sprite.Sprite):
     def getType(self):
         # return the type of the sprite
         return self.type
+    
+    def getCategory(self):
+        # return the category of the sprite
+        return self.category
 
