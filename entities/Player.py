@@ -45,6 +45,10 @@ class Player(pygame.sprite.Sprite):
         self.cooldown_bar.fill(self.cooldown_bar_color)
         
         self.effect_start_time = 0
+        
+        # Create a mask for the image
+        self.image_copy = self.image.copy()
+        self.mask = pygame.mask.from_surface(self.image_copy)
 
     def move(self, keys):
         # update the position of the sprite based on user input

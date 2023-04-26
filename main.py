@@ -299,26 +299,23 @@ while not game_over:
     
     if not player.getInvincibilityStatus():
         # handle collision detection between enemies and player
-        for enemy in enemy_group:
-            if enemy.getType() == "plane" and player.getX() + PLAYER_WIDTH - 35 > enemy.rect.x and player.getX() < enemy.rect.x + enemy.rect.width -35 \
-                and player.getY() + PLAYER_HEIGHT -35 > enemy.rect.y and player.getY() < enemy.rect.y + enemy.rect.height - 35:
-                game_over = True
-                
-        # handle collision between player and bullet
-        for bullet in bullet_group:
-            # if player.rect.colliderect(bullet.rect):
-            #     player.health -= 1
-            #     bullet_group.remove(bullet)
-            #     all_sprite_group.remove(bullet)
-            #     if player.health == 0:
-            #         game_over = True
-            if player.getX() + PLAYER_WIDTH - 25 > bullet.rect.x and player.getX() < bullet.rect.x + bullet.rect.width -25 \
-                and player.getY() + PLAYER_HEIGHT - 20 > bullet.rect.y and player.getY() < bullet.rect.y + bullet.rect.height - 20:
+        player_collisions = pygame.sprite.spritecollide(player, enemy_group, False, pygame.sprite.collide_mask)
+        for enemy in player_collisions:
+            # Check if the masks overlap
+            if pygame.sprite.collide_mask(player, enemy) and enemy.getType() == "plane":
+                game_over = True  
+               
+        # handle collision between player and bullet 
+        bullet_collisions = pygame.sprite.spritecollide(player, bullet_group, False, pygame.sprite.collide_mask)
+        for bullet in bullet_collisions:
+            # Check if the masks overlap
+            if pygame.sprite.collide_mask(player, bullet):
                 player.health -= 1
                 bullet_group.remove(bullet)
                 all_sprite_group.remove(bullet)
                 if player.health == 0:
                     game_over = True
+                
  
             
     for bullet in bullet_group:

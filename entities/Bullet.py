@@ -17,6 +17,10 @@ class Bullet(pygame.sprite.Sprite):
         # create the image for the sprite
         self.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
         pygame.draw.circle(self.image, RED, (radius, radius), radius)
+        
+        # Create a mask for the image
+        self.image_copy = self.image.copy()
+        self.mask = pygame.mask.from_surface(self.image_copy)
 
     def move(self):
         self.rect.y += self.speed_y

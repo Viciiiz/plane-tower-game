@@ -38,6 +38,10 @@ class EnemyPlane(pygame.sprite.Sprite):
         self.shoot_delay = shoot_delay # milliseconds
         
         self.bullet_group = bullet_group
+        
+        # Create a mask for the image
+        self.image_copy = self.image.copy()
+        self.mask = pygame.mask.from_surface(self.image_copy)
             
 
     def move(self, player_pos):
@@ -56,6 +60,10 @@ class EnemyPlane(pygame.sprite.Sprite):
         # self.image = pygame.transform.rotate(self.transparent_surface, -angle_degrees-90)
         self.image = pygame.transform.rotate(self.transparent_surface, -180)
         # self.rect = self.image.get_rect(center=self.rect.center)
+        
+         # Update the mask for the rotated image
+        self.mask = pygame.mask.from_surface(self.image)
+
             
         # check if it's time to shoot
         now = pygame.time.get_ticks()
