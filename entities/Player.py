@@ -71,6 +71,11 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom > WINDOW_HEIGHT:
             self.rect.bottom = WINDOW_HEIGHT
             
+    def collides_with(self, sprite):
+    # check for collision with another sprite
+        return self.rect.colliderect(sprite.rect)
+
+            
     def draw(self):
         # draw the player on the given surface
         # pygame.draw.rect(window, BLACK, self.rect)

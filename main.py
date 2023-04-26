@@ -1,8 +1,8 @@
 import math
 import pygame
 import random
-from entities import Enemies, Player, EnemyBoat, EnemyPlane, Tokens
-from effects import Invincibility
+from entities import Enemies, Player, EnemyBoat, EnemyPlane, Tokens, Towers, man, RedEyes
+from effects import Invincibility, Explosion
 import json
 # from game.level import levels
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, ASPHALT, BEACH, CLEAR_BLUE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
@@ -10,7 +10,9 @@ from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, A
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
 
 
-pygame.display.set_caption("Avoid the Obstacles")
+pygame.display.set_caption("Un-Twin the Towers")
+
+pygame.mixer.init()
 
 # set up the game clock
 clock = pygame.time.Clock()
@@ -30,6 +32,7 @@ player_group = pygame.sprite.Group()
 all_sprite_group = pygame.sprite.LayeredUpdates()
 token_group = pygame.sprite.Group()
 player_invincibility_effect_group = pygame.sprite.Group()
+explosions = pygame.sprite.Group()
 
 
 player = Player.Player(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT, player_speed)
@@ -135,6 +138,11 @@ def order_depth():
     for sprite in all_sprite_group:
         if sprite.getType() == "boat":
             all_sprite_group.move_to_back(sprite)
+    # move boats to the back of the sprite group
+    for sprite in all_sprite_group:
+        if sprite.getType() == "tower":
+            all_sprite_group.move_to_back(sprite)
+            
 
 # Define the top and bottom colors of the gradient
 top_color = BEACH
@@ -154,7 +162,9 @@ for y in range(window.get_height()):
     # Draw a line of this color on the surface
     pygame.draw.line(gradient_surface, color, (0, y), (window.get_width(), y))
 
-
+tower = Towers.Tower(WINDOW_WIDTH/2,0,100,1000)
+man = man.Man(WINDOW_WIDTH/4,0,500,700)
+redEyes = RedEyes.RedEyes(WINDOW_WIDTH/4,0,500,700)
 ######################################################################################
 
 # game loop
@@ -177,6 +187,35 @@ while not game_over:
             player_invincibility_effect_group.empty()
             
     game_time += clock.tick(FPS)
+    
+    current_enemy_count = enemy_count[current_enemy_index]
+    
+    if current_enemy_count == 100:
+        # while(1):
+        
+        tower.draw()
+        all_sprite_group.empty()
+        player_group.empty()
+        enemy_group.empty()
+        bullet_group.empty()
+        token_group.empty()
+        all_sprite_group.add(tower)
+        all_sprite_group.move_to_back(tower)
+        all_sprite_group.add(man)
+        all_sprite_group.remove(redEyes)
+        if player.collides_with(tower):
+            # Create an explosion at the position of the other sprite
+            explosion = Explosion.Explosion(player.rect.centerx, player.rect.centery)
+            all_sprite_group.add(explosion)
+            all_sprite_group.add(redEyes)
+            explosion_sound = pygame.mixer.Sound('resources/audio/explosion.flac')
+            explosion_sound.play()
+            explosions.add(explosion)
+    
+        
+        
+    
+    
     
     if score > 5:
         # Draw the gradient on the screen
@@ -233,7 +272,7 @@ while not game_over:
     time_since_delay_start = pygame.time.get_ticks() - delay_start_time
     # print(" ", current_token_delay, " ", time_since_delay_start, " ", delay_start_time)
     # create a new token instance 
-    if time_since_delay_start >= (delay_start_time + current_token_delay) and len(token_group) == 0:
+    if time_since_delay_start >= (delay_start_time + current_token_delay) and len(token_group) == 0 and current_enemy_count != 100:
         token = Tokens.Token(all_sprite_group)
         token_group.add(token)
         # all_sprite_group.add(token)
@@ -271,7 +310,7 @@ while not game_over:
     
     # Check if it's time to spawn a new enemy
     # if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies == 0 and current_round == max_round: # and num_enemies < MAX_ENEMIES:
-    if num_enemies == 0 and current_round == max_round:
+    if num_enemies == 0 and current_round == max_round and current_enemy_count != 100:
         current_enemy_count = enemy_count[current_enemy_index]
         # Create a new enemy and add it to the group
         for enemy_num in range(enemy_count[current_enemy_index]):
@@ -286,8 +325,8 @@ while not game_over:
             # random_delay = random.randint(0,2) * 1000
             # pygame.time.delay(random_delay)
         # move to next enemy index
-        if enemy_count[current_enemy_index+1] != 100:
-            current_enemy_index += 1
+        # if enemy_count[current_enemy_index+1] != 100:
+        current_enemy_index += 1
         current_round = 0
         max_round += 1
             
@@ -358,6 +397,12 @@ while not game_over:
         for enemy in player_collisions:
             # Check if the masks overlap
             if pygame.sprite.collide_mask(player, enemy) and enemy.getType() == "plane":
+                # Create an explosion at the position of the other sprite
+                explosion = Explosion.Explosion(player.rect.centerx, player.rect.centery)
+                explosion.draw(window)
+                explosions.add(explosion)
+                explosion_sound = pygame.mixer.Sound('resources/audio/explosion.flac')
+                explosion_sound.play()
                 game_over = True  
                
         # handle collision between player and bullet 
@@ -366,12 +411,21 @@ while not game_over:
             # Check if the masks overlap
             if pygame.sprite.collide_mask(player, bullet):
                 player.health -= 1
+                explosion_sound = pygame.mixer.Sound('resources/audio/impact.wav')
+                explosion_sound.play()
+
                 bullet_group.remove(bullet)
                 all_sprite_group.remove(bullet)
                 if player.health == 0:
+                    # Create an explosion at the position of the other sprite
+                    explosion = Explosion.Explosion(player.rect.centerx, player.rect.centery)
+                    explosion.draw(window)
+                    explosions.add(explosion)
                     game_over = True
                 
- 
+    # In your draw function:
+    explosions.update()
+    explosions.draw(window)
             
     for bullet in bullet_group:
         bullet.move()
