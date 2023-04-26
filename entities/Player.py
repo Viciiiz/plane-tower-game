@@ -21,6 +21,17 @@ class Player(pygame.sprite.Sprite):
         
         self.health = 5
         self.is_invincible = False
+        
+        # cooldown bar surface for invincibility effect
+        # self.cooldown_bar = pygame.Surface((width, 5))
+        # self.cooldown_bar.fill(RED)
+        self.cooldown_bar_width = width+100
+        self.cooldown_bar_height = 5
+        self.cooldown_bar_color = BLUE
+        self.cooldown_bar = pygame.Surface((self.cooldown_bar_width, self.cooldown_bar_height))
+        self.cooldown_bar.fill(self.cooldown_bar_color)
+        
+        self.effect_start_time = 0
 
     def move(self, keys):
         # update the position of the sprite based on user input
@@ -46,11 +57,30 @@ class Player(pygame.sprite.Sprite):
     def draw(self):
         # draw the player on the given surface
         pygame.draw.rect(window, BLACK, self.rect)
+        # decrease the size of the cooldown bar as the effect timer counts down
+        if self.is_invincible:
+            time_left = pygame.time.get_ticks() - self.effect_start_time
+            if time_left >= 0:
+                time_passed = min(time_left, 4000)
+                self.cooldown_bar_width = int((1 - time_passed / 4000) * self.rect.width)
+                self.cooldown_bar = pygame.Surface((self.cooldown_bar_width, self.cooldown_bar_height))
+                self.cooldown_bar.fill(BLUE)
+
+                if time_left >= 4000:
+                    self.effect_active = False
+                    pygame.time.set_timer(pygame.USEREVENT, 0)
+        # draw the cooldown bar above the player's sprite
+        if self.is_invincible:
+            window.blit(self.cooldown_bar, (self.rect.left, self.rect.top - 10))
         
     def activate_invincibility_effect(self):
         self.is_invincible = True
         pygame.time.set_timer(pygame.USEREVENT, 4000)
         self.image.fill(RED)
+        # reset the cooldown bar to full size
+        self.cooldown_bar_size = self.rect.width
+        self.cooldown_bar = pygame.Surface((self.cooldown_bar_size, 5))
+        self.cooldown_bar.fill(RED)
         
         
     def deactivate_invincibility_effect(self):
@@ -67,3 +97,6 @@ class Player(pygame.sprite.Sprite):
     
     def getInvincibilityStatus(self):
         return self.is_invincible
+    
+    def set_effect_start_time(self, time):
+        self.effect_start_time = time

@@ -151,7 +151,8 @@ while not game_over:
                     player.activate_invincibility_effect()
                     player_invincibility -= 1
                     player_invincibility_effect_group.add(Invincibility.Invincibility(player.rect))
-        if event.type == pygame.USEREVENT:
+                    player.set_effect_start_time(pygame.time.get_ticks())
+        if event.type == pygame.USEREVENT and player.is_invincible:
             # timer has expired
             player.deactivate_invincibility_effect()
             player_invincibility_effect_group.empty()
