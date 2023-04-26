@@ -180,7 +180,8 @@ while not game_over:
        
     # draw the game
     window.fill(WHITE)
-    pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
+    # pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
+    
             
     # check how much time has passed since the delay started
     time_since_delay_start = pygame.time.get_ticks() - delay_start_time
@@ -280,16 +281,39 @@ while not game_over:
                 num_reset = 0
             score += 1
 
+    # if not player.getInvincibilityStatus():
+    #     # handle collision detection between enemies and player
+    #     for enemy in enemy_group:
+    #         if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
+    #             and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
+    #             game_over = True
+                
+    #     # handle collision between player and bullet
+    #     for bullet in bullet_group:
+    #         if player.rect.colliderect(bullet.rect):
+    #             player.health -= 1
+    #             bullet_group.remove(bullet)
+    #             all_sprite_group.remove(bullet)
+    #             if player.health == 0:
+    #                 game_over = True
+    
     if not player.getInvincibilityStatus():
         # handle collision detection between enemies and player
         for enemy in enemy_group:
-            if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
-                and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
+            if enemy.getType() == "plane" and player.getX() + PLAYER_WIDTH - 25 > enemy.rect.x and player.getX() < enemy.rect.x + enemy.rect.width -25 \
+                and player.getY() + PLAYER_HEIGHT -25 > enemy.rect.y and player.getY() < enemy.rect.y + enemy.rect.height - 25:
                 game_over = True
                 
         # handle collision between player and bullet
         for bullet in bullet_group:
-            if player.rect.colliderect(bullet.rect):
+            # if player.rect.colliderect(bullet.rect):
+            #     player.health -= 1
+            #     bullet_group.remove(bullet)
+            #     all_sprite_group.remove(bullet)
+            #     if player.health == 0:
+            #         game_over = True
+            if player.getX() + PLAYER_WIDTH - 25 > bullet.rect.x and player.getX() < bullet.rect.x + bullet.rect.width -25 \
+                and player.getY() + PLAYER_HEIGHT - 20 > bullet.rect.y and player.getY() < bullet.rect.y + bullet.rect.height - 20:
                 player.health -= 1
                 bullet_group.remove(bullet)
                 all_sprite_group.remove(bullet)

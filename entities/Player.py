@@ -16,8 +16,21 @@ class Player(pygame.sprite.Sprite):
         self.type = "player"
 
         # set the image and color of the sprite
-        self.image = pygame.Surface((width, height))
-        self.image.fill(BLUE)
+        # # pygame.image.load("resources/images/plane-top.jpg")
+        # self.image = pygame.image.load("resources/images/plane-top.png").convert_alpha()
+        # self.mask = pygame.mask.from_surface(self.image)
+        # # self.image.set_colorkey((255, 255, 255))
+        # self.image = pygame.transform.scale(self.image, (width, height))
+        # # self.image = pygame.Surface((width, height))
+        # # self.image.fill(BLUE)
+        self.image = pygame.image.load("resources/images/plane-top.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.image.set_colorkey((0, 0, 0))
+        self.transparent_surface = pygame.Surface(self.image.get_size(), flags=pygame.SRCALPHA)
+        self.transparent_surface.fill((0, 0, 0, 0))
+        self.transparent_surface.blit(self.image, (0, 0))
+        self.image = self.transparent_surface
+        # self.rect = self.image.get_rect()
         
         self.health = 5
         self.is_invincible = False
@@ -56,7 +69,10 @@ class Player(pygame.sprite.Sprite):
             
     def draw(self):
         # draw the player on the given surface
-        pygame.draw.rect(window, BLACK, self.rect)
+        # pygame.draw.rect(window, BLACK, self.rect)
+        sprite = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+        sprite.blit(self.image, (0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        window.blit(self.image, self.rect)
         # decrease the size of the cooldown bar as the effect timer counts down
         if self.is_invincible:
             time_left = pygame.time.get_ticks() - self.effect_start_time
@@ -100,3 +116,9 @@ class Player(pygame.sprite.Sprite):
     
     def set_effect_start_time(self, time):
         self.effect_start_time = time
+        
+    def getX(self):
+        return self.rect.x
+    
+    def getY(self):
+        return self.rect.y

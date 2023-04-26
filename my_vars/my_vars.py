@@ -19,8 +19,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # player and player's movement speed
-PLAYER_WIDTH = 50
-PLAYER_HEIGHT = 50
+PLAYER_WIDTH = 100
+PLAYER_HEIGHT = 100
 player_x = (WINDOW_WIDTH - PLAYER_WIDTH) // 2
 player_y = WINDOW_HEIGHT - PLAYER_HEIGHT - 10
 player_speed = 5
