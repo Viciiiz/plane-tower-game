@@ -96,7 +96,7 @@ class Player(pygame.sprite.Sprite):
     def activate_invincibility_effect(self):
         self.is_invincible = True
         pygame.time.set_timer(pygame.USEREVENT, 4000)
-        self.image.fill(RED)
+        # self.image.fill(RED)
         # reset the cooldown bar to full size
         self.cooldown_bar_size = self.rect.width
         self.cooldown_bar = pygame.Surface((self.cooldown_bar_size, 5))
@@ -106,7 +106,7 @@ class Player(pygame.sprite.Sprite):
     def deactivate_invincibility_effect(self):
         self.is_invincible = False
         pygame.time.set_timer(pygame.USEREVENT, 0)
-        self.image.fill(BLUE)
+        # self.image.fill(BLUE)
         
     def getType(self):
         # return the type of the sprite

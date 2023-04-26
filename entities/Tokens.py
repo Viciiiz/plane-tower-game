@@ -18,7 +18,7 @@ class Token(pygame.sprite.Sprite):
         rand_category = random.randint(1,10)
         if rand_category > 8:
             self.category = "life"
-        elif rand_category < 7:
+        elif rand_category < 3:
             self.category = "invincibility"
         else:
             self.category = "score"
