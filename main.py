@@ -1,7 +1,7 @@
 import math
 import pygame
 import random
-from entities import Enemies, Player, EnemyBoat, EnemyPlane
+from entities import Enemies, Player, EnemyBoat, EnemyPlane, Tokens
 import json
 # from game.level import levels
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
@@ -26,14 +26,19 @@ levels = json.loads(json_data)
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
-# enemy_plane_group = pygame.sprite.LayeredUpdates()
-# enemy_boat_group = pygame.sprite.LayeredUpdates() 
 all_sprite_group = pygame.sprite.LayeredUpdates()
+token_group = pygame.sprite.Group()
 
 
 player = Player.Player(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT, player_speed)
 player_group.add(player)
 all_sprite_group.add(player)
+
+
+# create a new token instance 
+token = Tokens.Token(all_sprite_group)
+token_group.add(token)
+all_sprite_group.add(token)
 
 
 # function to create enemy sprites
@@ -190,7 +195,21 @@ while not game_over:
                     enemy.rect.x += math.cos(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
                     enemy.rect.y += math.sin(angle) * (ENEMY_DISTANCE_THRESHOLD - distance) / 2
                     break
+    
+    
+    
+    
+    # update and draw the coin
+    token.move()
+    token.draw(window)
                 
+    # respawn the coin if necessary
+    if token.shouldRespawn():
+        token.reset()
+        
+    # check for collisions with the player
+    if token.checkCollision(player):
+        score += 100
 
     # reset position of enemy objects and update score 
     for enemy in enemy_group:
@@ -222,7 +241,6 @@ while not game_over:
             all_sprite_group.remove(bullet)
             if player.health == 0:
                game_over = True
-               pygame.quit() 
  
             
     for bullet in bullet_group:
@@ -241,21 +259,6 @@ while not game_over:
     
     
     # print("round = ", current_round, "max round = ", max_round, "num_reset = ", num_reset, "current enemy count = ", current_enemy_count)
-        
-    
-    # Increase the number of enemies over time
-    # if game_time >= 10000:  # Increase after 10 seconds
-    #     MAX_ENEMIES = 20
-    #     ENEMY_INTERVAL = 4000
-    # if game_time >= 20000:  # Increase after 20 seconds
-    #     MAX_ENEMIES = 30
-    #     ENEMY_INTERVAL = 3000
-    
-    # decrease shoot delay over time
-    # if game_time >= 5000:  # Increase after 10 seconds
-    #     for enemy in enemy_group:
-    #         enemy.setShootDelay(shoot_delay - 500)
-    #         shoot_delay -= 500
 
 
     # set the game's FPS
