@@ -1,0 +1,52 @@
+
+
+{
+    "levels" : {
+        "level_1" : {
+            "easy" : {
+                "enemies" : [0, 3, 3, 3, 4, 6, 6, 6, 8, 10, 10, 10, 100],
+                "speed_min_boat" : 2,
+                "speed_max_boat" : 4,
+                "speed_min_plane" : 3,
+                "speed_max_plane" : 5  
+            },
+            "medium" : {
+                "enemies" : [0, 5, 5, 5, 7, 8, 8, 8, 10, 12, 12, 12, 100],
+                "speed_min_boat" : 3,
+                "speed_max_boat" : 5,
+                "speed_min_plane" : 3,
+                "speed_max_plane" : 6  
+            },
+            "hard" : {
+                "enemies" : [0, 8, 8, 8, 10, 12, 12, 12, 14, 16, 16, 16, 100],
+                "speed_min_boat" : 4,
+                "speed_max_boat" : 6,
+                "speed_min_plane" : 4,
+                "speed_max_plane" : 7  
+            }
+        },
+        "level_2" : {
+            "easy" : {
+                "enemies" : [0, 4, 4, 4, 4, 5, 7, 7, 7, 7, 10, 12, 12, 12, 12, 100],
+                "speed_min_boat" : 3,
+                "speed_max_boat" : 4,
+                "speed_min_plane" : 4,
+                "speed_max_plane" : 5  
+            },
+            "medium" : {
+                "enemies" : [0, 5, 5, 6, 6, 7, 8, 8, 9, 9, 11, 12, 12, 14, 14, 100],
+                "speed_min_boat" : 4,
+                "speed_max_boat" : 5,
+                "speed_min_plane" : 5,
+                "speed_max_plane" : 7  
+            },
+            "hard" : {
+                "enemies" : [0, 9, 9, 10, 10, 11, 12, 13, 14, 14, 15, 17, 18, 20, 20, 100],
+                "speed_min_boat" : 5,
+                "speed_max_boat" : 7,
+                "speed_min_plane" : 5,
+                "speed_max_plane" : 8  
+            }
+        }
+    }
+}

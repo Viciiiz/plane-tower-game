@@ -2,7 +2,8 @@ import math
 import pygame
 import random
 from entities import Enemies, Player, EnemyBoat, EnemyPlane
-from game.level import levels
+import json
+# from game.level import levels
 from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, PLAYER_WIDTH, PLAYER_HEIGHT, player_x, player_y, \
     player_speed, font, score, obstacle_plane_width, obstacle_plane_height, obstacle_boat_width, obstacle_boat_height, \
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
@@ -14,12 +15,19 @@ pygame.display.set_caption("Avoid the Obstacles")
 clock = pygame.time.Clock()
 
 
+# Parse the level.json data into a Python object
+f = open('./game/level.json', 'r')
+json_data = f.read()
+f.close()
+levels = json.loads(json_data)
+
+
 # create a group to hold all enemy sprites
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
-enemy_plane_group = pygame.sprite.LayeredUpdates()
-enemy_boat_group = pygame.sprite.LayeredUpdates() 
+# enemy_plane_group = pygame.sprite.LayeredUpdates()
+# enemy_boat_group = pygame.sprite.LayeredUpdates() 
 all_sprite_group = pygame.sprite.LayeredUpdates()
 
 
@@ -29,32 +37,54 @@ all_sprite_group.add(player)
 
 
 # function to create enemy sprites
-def create_enemy(obstacle_width, obstacle_height, speed_range_x, speed_range_y):
-    if random.randint(0,1):
+def create_enemy(obstacle_width, obstacle_height, speed_range_x_boat, speed_range_y_boat, speed_range_x_plane, speed_range_y_plane, type):
+    shoot_delay = 2500 + random.randint(1,5) * 100 
+    if type == "plane":
         enemy = EnemyPlane.EnemyPlane(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width, obstacle_height, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
+                    obstacle_width, obstacle_height, speed_range_x_plane, speed_range_y_plane, bullet_group, shoot_delay, all_sprite_group)
     else:
         enemy = EnemyBoat.EnemyBoat(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width + 15, obstacle_height + 15, speed_range_x, speed_range_y, bullet_group, shoot_delay, all_sprite_group)
+                    obstacle_width + 15, obstacle_height + 15, speed_range_x_boat, speed_range_y_boat, bullet_group, shoot_delay, all_sprite_group)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
         enemy.rect.y = random.randint(0, abs(int(WINDOW_HEIGHT/10) - enemy.rect.height))
     enemy_group.add(enemy)
     all_sprite_group.add(enemy)
 
-shoot_delay = 3000
+
+
 Enemies.groups = [enemy_group]
 TIME_BEFORE_SPAWN = 1000
 ENEMY_DISTANCE_THRESHOLD = 100
 MAX_ENEMIES = 50
-ENEMY_INTERVAL = 5000
+ENEMY_INTERVAL = 4000
 enemy_timer = pygame.time.get_ticks()
 num_enemies = 0
 game_time = 0  # Total time elapsed since the start of the game
 FPS = 60
+obstacle_height = 50
+obstacle_width = 50
+
+current_level = "level_1"
+current_difficulty = "easy"
+
+boat_speed_max = levels["levels"][current_level][current_difficulty]["speed_max_boat"]
+boat_speed_min = levels["levels"][current_level][current_difficulty]["speed_min_boat"]
+plane_speed_max = levels["levels"][current_level][current_difficulty]["speed_max_plane"]
+plane_speed_min = levels["levels"][current_level][current_difficulty]["speed_min_plane"]
+enemy_count = levels["levels"][current_level][current_difficulty]["enemies"]
+current_enemy_index = 1
+current_enemy_count = enemy_count[current_enemy_index]
+
+new_enemy = True
+current_round = 0
+max_round = 0
+
+num_reset = 0
+
 
 # set a variable to store the time that the delay started
-delay_start_time = pygame.time.get_ticks()
+# delay_start_time = pygame.time.get_ticks()
 
 
 # function to display score
@@ -66,7 +96,7 @@ def display_score():
 # function to display health
 def display_health():
     health_text = font.render("Health: " + str(player.health), True, BLACK)
-    window.blit(health_text, (400, 10))
+    window.blit(health_text, (WINDOW_WIDTH - 100, 10))
     pygame.display.update()
  
 # rearrange sprites to give depth     
@@ -87,6 +117,9 @@ def order_depth():
     for sprite in all_sprite_group:
         if sprite.getType() == "boat":
             all_sprite_group.move_to_back(sprite)
+
+
+######################################################################################
 
 # game loop
 while not game_over:
@@ -116,14 +149,29 @@ while not game_over:
     pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
             
     # check how much time has passed since the delay started
-    time_since_delay_start = pygame.time.get_ticks() - delay_start_time
+    # time_since_delay_start = pygame.time.get_ticks() - delay_start_time
     
     # Check if it's time to spawn a new enemy
-    if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies < MAX_ENEMIES:
+    # if pygame.time.get_ticks() - enemy_timer >= ENEMY_INTERVAL and num_enemies == 0 and current_round == max_round: # and num_enemies < MAX_ENEMIES:
+    if num_enemies == 0 and current_round == max_round:
+        current_enemy_count = enemy_count[current_enemy_index]
         # Create a new enemy and add it to the group
-        create_enemy(obstacle_plane_width, obstacle_plane_height, random.randint(2, 4), random.randint(2, 4))
-        num_enemies += 1
-        enemy_timer = pygame.time.get_ticks()
+        for enemy_num in range(enemy_count[current_enemy_index]):
+            type = "plane"
+            if random.randint(0,1):
+                type = "boat"
+            create_enemy(obstacle_width, obstacle_height, \
+                random.randint(boat_speed_min, boat_speed_max), random.randint(boat_speed_min, boat_speed_max), \
+                random.randint(plane_speed_min, plane_speed_max), random.randint(plane_speed_min, plane_speed_max), type)
+            num_enemies += 1
+            enemy_timer = pygame.time.get_ticks()
+            random_delay = random.randint(0,2) * 100
+            pygame.time.delay(random_delay)
+        # move to next enemy index
+        if enemy_count[current_enemy_index+1] != 100:
+            current_enemy_index += 1
+        current_round = 0
+        max_round += 1
             
     # move enemies
     for enemy in enemy_group:
@@ -147,7 +195,17 @@ while not game_over:
     # reset position of enemy objects and update score 
     for enemy in enemy_group:
         if enemy.rect.y > WINDOW_HEIGHT or enemy.rect.x > WINDOW_WIDTH or enemy.rect.x < 0:
-            enemy.reset()
+            if current_round < max_round:
+                enemy.reset()
+                num_reset += 1
+                if num_reset >= current_enemy_count:
+                    current_round += 1
+                    
+            else:
+                all_sprite_group.remove(enemy)
+                enemy_group.remove(enemy)
+                num_enemies -= 1
+                num_reset = 0
             score += 1
 
     # handle collision detection between enemies and player
@@ -179,6 +237,11 @@ while not game_over:
     
     display_health()
     display_score()
+    
+    
+    
+    print("round = ", current_round, "max round = ", max_round, "num_reset = ", num_reset, "current enemy count = ", current_enemy_count)
+        
     
     # Increase the number of enemies over time
     # if game_time >= 10000:  # Increase after 10 seconds
