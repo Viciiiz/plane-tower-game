@@ -165,8 +165,8 @@ while not game_over:
                 random.randint(plane_speed_min, plane_speed_max), random.randint(plane_speed_min, plane_speed_max), type)
             num_enemies += 1
             enemy_timer = pygame.time.get_ticks()
-            random_delay = random.randint(0,2) * 100
-            pygame.time.delay(random_delay)
+            # random_delay = random.randint(0,2) * 1000
+            # pygame.time.delay(random_delay)
         # move to next enemy index
         if enemy_count[current_enemy_index+1] != 100:
             current_enemy_index += 1
@@ -175,7 +175,7 @@ while not game_over:
             
     # move enemies
     for enemy in enemy_group:
-        enemy.move()
+        enemy.move(player.rect.center)
         
         # make sure the enemies don't overlap if they are the same type
         for other_enemy in enemy_group:
@@ -240,7 +240,7 @@ while not game_over:
     
     
     
-    print("round = ", current_round, "max round = ", max_round, "num_reset = ", num_reset, "current enemy count = ", current_enemy_count)
+    # print("round = ", current_round, "max round = ", max_round, "num_reset = ", num_reset, "current enemy count = ", current_enemy_count)
         
     
     # Increase the number of enemies over time
@@ -265,14 +265,6 @@ while not game_over:
 pygame.quit()
 
 # to do
-# better control of number of enemies on the screen over time
-    # this level will be 45 seconds long and will have a max of 10 enemies on the screen. 
-        # first 15 seconds: 3 enemies max on the screen
-        # 5 seconds of break
-        # next 15 seconds: 6 enemies on the screen
-        # 5 seconds of break
-        # last 15 seconds: 10 enemies on the screen
-        # then tower?
 # add turrels and landscape?
 # add tokens?
 # add towers at the end

@@ -1,5 +1,6 @@
 import random
 import pygame
+import math
 from my_vars.my_vars import WINDOW_WIDTH, window, BLACK
 from . import Bullet
 
@@ -30,24 +31,43 @@ class EnemyPlane(pygame.sprite.Sprite):
         self.bullet_group = bullet_group
             
 
-    def move(self):
+    def move(self, player_pos):
         # update the position of the sprite based on its velocity
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
             
         # check if it's time to shoot
         now = pygame.time.get_ticks()
+        # player_pos = (0, 0)
         if now - self.shoot_timer > self.shoot_delay:
-            self.shoot()
+            self.shoot_at_player(player_pos)
             self.shoot_timer = now
+
 
     def shoot(self):
         # create a new bullet instance and add it to the bullet group
         bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, self.speed_y + 2, 5)
         self.bullet_group.add(bullet)
         self.all_sprite_group.add(bullet)
+        
+        
+    def shoot_at_player(self, player_pos):
+        # calculate the angle between the enemy and the player
+        dx = player_pos[0] - (self.rect.x + self.rect.width / 2)
+        dy = player_pos[1] - (self.rect.y + self.rect.height / 2)
+        angle = math.atan2(dy, dx)
+        
+        # calculate the velocity vector for the bullet
+        speed = 5
+        bullet_speed_x = speed * math.cos(angle)
+        bullet_speed_y = speed * math.sin(angle)
+        
+        # create a new bullet instance and add it to the bullet group
+        bullet = Bullet.Bullet(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height, bullet_speed_x, bullet_speed_y, 5)
+        self.bullet_group.add(bullet)
+        self.all_sprite_group.add(bullet)
+    
             
-
     def reset(self):
         # reset the position and velocity of the sprite
         self.rect.x = random.randint(0, WINDOW_WIDTH - self.rect.width)
