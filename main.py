@@ -46,7 +46,7 @@ def create_enemy(obstacle_width, obstacle_height, speed_range_x_boat, speed_rang
                     obstacle_width, obstacle_height, speed_range_x_plane, speed_range_y_plane, bullet_group, shoot_delay, all_sprite_group)
     else:
         enemy = EnemyBoat.EnemyBoat(random.randint(0, WINDOW_WIDTH), 0,
-                    obstacle_width + 15, obstacle_height + 15, speed_range_x_boat, speed_range_y_boat, bullet_group, shoot_delay, all_sprite_group)
+                    obstacle_width + 15, obstacle_height + 100, speed_range_x_boat, speed_range_y_boat, bullet_group, shoot_delay, all_sprite_group)
     while any(pygame.sprite.spritecollide(enemy, enemy_group, False, collided=None)):
         enemy.rect.x = random.randint(0, WINDOW_WIDTH - enemy.rect.width)
         enemy.rect.y = random.randint(0, abs(int(WINDOW_HEIGHT/10) - enemy.rect.height))

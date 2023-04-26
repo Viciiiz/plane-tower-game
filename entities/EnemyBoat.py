@@ -21,15 +21,23 @@ class EnemyBoat(pygame.sprite.Sprite):
         self.type = "boat"
 
         # set the image and color of the sprite based on its type
-        self.image = pygame.Surface((width, height))
+        # self.image = pygame.Surface((width, height))
         
-        self.image.fill(GREY)
+        # self.image.fill(GREY)
             
         # create a timer for shooting
         self.shoot_timer = 0
         self.shoot_delay = shoot_delay # milliseconds
         
         self.bullet_group = bullet_group
+        
+        self.image = pygame.image.load("resources/images/enemy-boat.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.image.set_colorkey((0, 0, 0))
+        self.transparent_surface = pygame.Surface(self.image.get_size(), flags=pygame.SRCALPHA)
+        self.transparent_surface.fill((0, 0, 0, 0))
+        self.transparent_surface.blit(self.image, (0, 0))
+        self.image = self.transparent_surface
             
 
     def move(self, player_pos):
@@ -80,7 +88,10 @@ class EnemyBoat(pygame.sprite.Sprite):
         
         
     def draw(self):
-        pygame.draw.rect(window, GREY, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        # pygame.draw.rect(window, GREY, (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        sprite = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+        sprite.blit(self.image, (0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
+        window.blit(self.image, self.rect)
             
 
     def getType(self):
