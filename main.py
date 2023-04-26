@@ -90,6 +90,7 @@ player_invincibility = 0
 using_invincibility = False
 
 is_on_ocean = True
+is_in_city = False
 
 # set a variable to store the time that the delay started
 delay_start_time = pygame.time.get_ticks()
@@ -178,32 +179,42 @@ while not game_over:
             
     game_time += clock.tick(FPS)
     
-    if score > 5:
+    current_enemy_count = enemy_count[current_enemy_index]
+    print(current_enemy_count)
+    
+    if current_enemy_count == 50: # move from sea to beach
         # Draw the gradient on the screen
         is_on_ocean = False
+        current_enemy_index += 1
         
-    if score > 10 and not is_on_ocean:
+    if current_enemy_count == 60 and not is_on_ocean: # beach
         # window.fill(ASPHALT)
-        for y in range(window.get_height()):
-            # Calculate the color at this point in the gradient
-            t = y / (window.get_height() - 1)
-            color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
+        # for y in range(window.get_height()):
+        #     # Calculate the color at this point in the gradient
+        #     t = y / (window.get_height() - 1)
+        #     color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
 
-            # Draw a line of this color on the screen
-            pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+        #     # Draw a line of this color on the screen
+        #     pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+        current_enemy_index += 1
         window.fill(BEACH)
     
-    if score > 15 and not is_on_ocean:
-        for y in range(window.get_height()):
-            # Calculate the color at this point in the gradient
-            t = y / (window.get_height() - 1)
-            color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color_2, bottom_color_2))
+    if current_enemy_count == 70 and not is_on_ocean: # city
+        # for y in range(window.get_height()):
+        #     # Calculate the color at this point in the gradient
+        #     t = y / (window.get_height() - 1)
+        #     color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color_2, bottom_color_2))
 
-            # Draw a line of this color on the screen
-            pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+        #     # Draw a line of this color on the screen
+        #     pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+        current_enemy_index += 1
+        # window.fill(ASPHALT)
+        
+    if current_enemy_count == 80 and not is_on_ocean: # city
         window.fill(ASPHALT)
+        is_in_city = True
 
-    else: 
+    if is_on_ocean: 
         window.fill(CLEAR_BLUE)
     
             
@@ -336,21 +347,6 @@ while not game_over:
                 num_reset = 0
             score += 1
 
-    # if not player.getInvincibilityStatus():
-    #     # handle collision detection between enemies and player
-    #     for enemy in enemy_group:
-    #         if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
-    #             and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
-    #             game_over = True
-                
-    #     # handle collision between player and bullet
-    #     for bullet in bullet_group:
-    #         if player.rect.colliderect(bullet.rect):
-    #             player.health -= 1
-    #             bullet_group.remove(bullet)
-    #             all_sprite_group.remove(bullet)
-    #             if player.health == 0:
-    #                 game_over = True
     
     if not player.getInvincibilityStatus():
         # handle collision detection between enemies and player
@@ -402,5 +398,5 @@ pygame.quit()
 # add turrels and landscape?
 # add towers at the end
 
-# add enemy graphics
-    # boat and plane
+# fix color change and levels
+# move to 2.5D
