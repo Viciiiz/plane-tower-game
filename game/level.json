@@ -4,7 +4,7 @@
     "levels" : {
         "level_1" : {
             "easy" : {
-                "enemies" : [0, 4, 5, 100],
+                "enemies" : [0, 3, 5, 5, 100],
                 "speed_min_boat" : 2,
                 "speed_max_boat" : 4,
                 "speed_min_plane" : 3,

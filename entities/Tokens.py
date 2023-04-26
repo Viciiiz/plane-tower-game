@@ -21,7 +21,7 @@ class Token(pygame.sprite.Sprite):
         if rand_category > 8:
             self.category = "life"
             self.image = pygame.image.load("resources/images/heart.png").convert_alpha()
-        elif rand_category < 3:
+        elif rand_category < 4:
             self.category = "invincibility"
             self.image = pygame.image.load("resources/images/boost.png").convert_alpha()
         else:

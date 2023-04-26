@@ -10,7 +10,7 @@ from my_vars.my_vars import WINDOW_WIDTH, WINDOW_HEIGHT, window, BLACK, WHITE, A
         obstacle_plane_x, obstacle_plane_y, obstacle_boat_x, obstacle_boat_y, game_over
 
 
-pygame.display.set_caption("Un-Twin the Towers")
+pygame.display.set_caption("Unmask the Politician")
 
 pygame.mixer.init()
 
@@ -163,8 +163,8 @@ for y in range(window.get_height()):
     pygame.draw.line(gradient_surface, color, (0, y), (window.get_width(), y))
 
 tower = Towers.Tower(WINDOW_WIDTH/2,0,100,1000)
-man = man.Man(WINDOW_WIDTH/4,0,500,700)
-redEyes = RedEyes.RedEyes(WINDOW_WIDTH/4,0,500,700)
+man = man.Man(int(WINDOW_WIDTH/8),0,500,700)
+redEyes = RedEyes.RedEyes(int(WINDOW_WIDTH/8),0,500,700)
 ######################################################################################
 
 # game loop
@@ -217,33 +217,33 @@ while not game_over:
     
     
     
-    if score > 5:
-        # Draw the gradient on the screen
-        is_on_ocean = False
+    # if score > 5:
+    #     # Draw the gradient on the screen
+    #     is_on_ocean = False
         
-    if score > 10 and not is_on_ocean:
-        # window.fill(ASPHALT)
-        for y in range(window.get_height()):
-            # Calculate the color at this point in the gradient
-            t = y / (window.get_height() - 1)
-            color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
+    # if score > 10 and not is_on_ocean:
+    #     # window.fill(ASPHALT)
+    #     for y in range(window.get_height()):
+    #         # Calculate the color at this point in the gradient
+    #         t = y / (window.get_height() - 1)
+    #         color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
 
-            # Draw a line of this color on the screen
-            pygame.draw.line(window, color, (0, y), (window.get_width(), y))
-        window.fill(BEACH)
+    #         # Draw a line of this color on the screen
+    #         pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+    #     window.fill(BEACH)
     
-    if score > 15 and not is_on_ocean:
-        for y in range(window.get_height()):
-            # Calculate the color at this point in the gradient
-            t = y / (window.get_height() - 1)
-            color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color_2, bottom_color_2))
+    # if score > 15 and not is_on_ocean:
+    #     for y in range(window.get_height()):
+    #         # Calculate the color at this point in the gradient
+    #         t = y / (window.get_height() - 1)
+    #         color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color_2, bottom_color_2))
 
-            # Draw a line of this color on the screen
-            pygame.draw.line(window, color, (0, y), (window.get_width(), y))
-        window.fill(ASPHALT)
+    #         # Draw a line of this color on the screen
+    #         pygame.draw.line(window, color, (0, y), (window.get_width(), y))
+    #     window.fill(ASPHALT)
 
-    else: 
-        window.fill(CLEAR_BLUE)
+    # else: 
+    window.fill(CLEAR_BLUE)
     
             
     # handle player movement
