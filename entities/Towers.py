@@ -57,20 +57,20 @@ class Tower(pygame.sprite.Sprite):
         sprite.blit(self.image, (0, 0), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
         window.blit(self.image, self.rect)
         # decrease the size of the cooldown bar as the effect timer counts down
-        if self.is_invincible:
-            time_left = pygame.time.get_ticks() - self.effect_start_time
-            if time_left >= 0:
-                time_passed = min(time_left, 4000)
-                self.cooldown_bar_width = int((1 - time_passed / 4000) * self.rect.width)
-                self.cooldown_bar = pygame.Surface((self.cooldown_bar_width, self.cooldown_bar_height))
-                self.cooldown_bar.fill(BLUE)
+        # if self.is_invincible:
+        #     time_left = pygame.time.get_ticks() - self.effect_start_time
+        #     if time_left >= 0:
+        #         time_passed = min(time_left, 4000)
+        #         self.cooldown_bar_width = int((1 - time_passed / 4000) * self.rect.width)
+        #         self.cooldown_bar = pygame.Surface((self.cooldown_bar_width, self.cooldown_bar_height))
+        #         self.cooldown_bar.fill(BLUE)
 
-                if time_left >= 4000:
-                    self.effect_active = False
-                    pygame.time.set_timer(pygame.USEREVENT, 0)
-        # draw the cooldown bar above the player's sprite
-        if self.is_invincible:
-            window.blit(self.cooldown_bar, (self.rect.left, self.rect.top - 10))
+        #         if time_left >= 4000:
+        #             self.effect_active = False
+        #             pygame.time.set_timer(pygame.USEREVENT, 0)
+        # # draw the cooldown bar above the player's sprite
+        # if self.is_invincible:
+        #     window.blit(self.cooldown_bar, (self.rect.left, self.rect.top - 10))
         
     def activate_invincibility_effect(self):
         self.is_invincible = True

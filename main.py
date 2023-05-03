@@ -213,36 +213,7 @@ while not game_over:
             explosions.add(explosion)
     
         
-        
-    
-    
-    
-    # if score > 5:
-    #     # Draw the gradient on the screen
-    #     is_on_ocean = False
-        
-    # if score > 10 and not is_on_ocean:
-    #     # window.fill(ASPHALT)
-    #     for y in range(window.get_height()):
-    #         # Calculate the color at this point in the gradient
-    #         t = y / (window.get_height() - 1)
-    #         color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color, bottom_color))
 
-    #         # Draw a line of this color on the screen
-    #         pygame.draw.line(window, color, (0, y), (window.get_width(), y))
-    #     window.fill(BEACH)
-    
-    # if score > 15 and not is_on_ocean:
-    #     for y in range(window.get_height()):
-    #         # Calculate the color at this point in the gradient
-    #         t = y / (window.get_height() - 1)
-    #         color = tuple(int((1 - t) * c1 + t * c2) for c1, c2 in zip(top_color_2, bottom_color_2))
-
-    #         # Draw a line of this color on the screen
-    #         pygame.draw.line(window, color, (0, y), (window.get_width(), y))
-    #     window.fill(ASPHALT)
-
-    # else: 
     window.fill(CLEAR_BLUE)
     
             
@@ -261,11 +232,6 @@ while not game_over:
     player.draw() 
     player_invincibility_effect_group.draw(window)
     
-    
-       
-    # draw the game
-    # window.fill(CLEAR_BLUE)
-    # pygame.draw.rect(window, BLACK, (player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT))
     
             
     # check how much time has passed since the delay started
@@ -374,22 +340,6 @@ while not game_over:
                 num_enemies -= 1
                 num_reset = 0
             score += 1
-
-    # if not player.getInvincibilityStatus():
-    #     # handle collision detection between enemies and player
-    #     for enemy in enemy_group:
-    #         if enemy.getType() == "plane" and player_x + PLAYER_WIDTH > enemy.rect.x and player_x < enemy.rect.x + enemy.rect.width \
-    #             and player_y + PLAYER_HEIGHT > enemy.rect.y and player_y < enemy.rect.y + enemy.rect.height:
-    #             game_over = True
-                
-    #     # handle collision between player and bullet
-    #     for bullet in bullet_group:
-    #         if player.rect.colliderect(bullet.rect):
-    #             player.health -= 1
-    #             bullet_group.remove(bullet)
-    #             all_sprite_group.remove(bullet)
-    #             if player.health == 0:
-    #                 game_over = True
     
     if not player.getInvincibilityStatus():
         # handle collision detection between enemies and player
@@ -451,10 +401,3 @@ while not game_over:
 
 # quit pygame
 pygame.quit()
-
-# to do
-# add turrels and landscape?
-# add towers at the end
-
-# add enemy graphics
-    # boat and plane
